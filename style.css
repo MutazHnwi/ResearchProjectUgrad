@@ -1,0 +1,23 @@
+.dot {
+    background-color: black;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+#text-style {
+    background-color: red;
+}
+
+.display {
+    background-color: white;
+
+}
+
+body {
+    margin: 0;
+    background-color: gray;
+    font-family: Arial, Helvetica, sans-serif;
+}
