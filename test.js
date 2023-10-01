@@ -5,8 +5,10 @@ let firstTapTime = 0;
 
 const startPoint = document.getElementById('startInnerDot');
 const targetPoint = document.getElementById('targetPoint');
+const targetInnerDot = document.getElementById('targetInnerDot');
 
 
+// At the touch start
 document.addEventListener("touchstart", e => {
     if (e.target === startInnerDot) {
 
@@ -17,9 +19,6 @@ document.addEventListener("touchstart", e => {
         const touch = e.changedTouches[0];
         touchStartX = touch.pageX;
         touchStartY = touch.pageY;
-        console.log(`Start triggered!!!`);
-        console.log(touch);
-
 
         // Create pointer to display a visual representation of where the finger is at any point
         const pointer = document.createElement("div")
@@ -32,7 +31,7 @@ document.addEventListener("touchstart", e => {
     }
 });
 
-
+//Finger is moving on the screen
 document.addEventListener("touchmove", e => {
     e.preventDefault();
     const touch = e.changedTouches[0];
@@ -42,31 +41,20 @@ document.addEventListener("touchmove", e => {
 });
 
 
+//Finger leaves the screen
 document.addEventListener("touchend", e => {
-    if (e.target === targetPoint) {
+    const touch = e.changedTouches[0];
+    touchEndX = touch.pageX;
+    touchEndY = touch.pageY;
+    const pointer = document.getElementById(touch.identifier);
+    pointer.remove();
 
-        const touch = e.changedTouches[0];
-        touchEndX = touch.pageX;
-        touchEndY = touch.pageY;
-        console.log(`End!!`);
-
-
-        const pointer = document.getElementById(touch.identifier);
-        pointer.remove();
-
-
+    if (document.elementFromPoint(touch.clientX, touch.clientY) === targetPoint
+        || document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
+        alert("Amazing! You hit the target!!!")
+    }
+    else {
         alert("You did not hit the target. Please try again");
     }
 });
 
-document.addEventListener('touchend', function (event) {
-    const touch = event.changedTouches[0];
-    if (isMoving && document.elementFromPoint(touch.clientX, touch.clientY) === targetPoint) {
-        isMoving = false;
-        pointer.style.display = 'none';
-        alert('You have reached the target!');
-    } else if (isMoving) {
-        isMoving = false;
-        pointer.style.display = 'none';
-    }
-});

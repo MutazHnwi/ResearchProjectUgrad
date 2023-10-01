@@ -1,7 +1,7 @@
 .dot {
     background-color: black;
-    width: 4rem;
-    height: 4rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
@@ -53,8 +53,8 @@ body {
 
 #startInnerDot,
 #targetInnerDot {
-    width: 23px;
-    height: 23px;
+    width: 25px;
+    height: 25px;
     background-color: white;
     border-radius: 50%;
     position: absolute;
