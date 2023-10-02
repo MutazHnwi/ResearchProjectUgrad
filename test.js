@@ -132,8 +132,8 @@ document.addEventListener("touchend", e => {
             Last speed: ${lastSpeed.toFixed(2)} px/ms
             Peak speed: ${peakSpeed.toFixed(2)} px/ms
             Time to peak speed: ${timeToPeakSpeed} ms
-            Last acceleration: ${lastAcceleration} ms^2
-            Average acceleration: ${averageAcceleration} ms^2`
+            Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
+            Average acceleration: ${averageAcceleration.toFixed(8)} ms^2`
         );
     }
     else {
@@ -146,8 +146,8 @@ document.addEventListener("touchend", e => {
             Last speed: ${lastSpeed.toFixed(2)} px/ms
             Peak speed: ${peakSpeed.toFixed(2)} px/ms
             Time to peak speed: ${timeToPeakSpeed} ms
-            Last acceleration: ${lastAcceleration} ms^2
-            Average acceleration: ${averageAcceleration} ms^2`
+            Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
+            Average acceleration: ${averageAcceleration.toFixed(8)} ms^2`
         );
         isDragging = false;
     }
