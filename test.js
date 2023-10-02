@@ -5,6 +5,15 @@ let touchEndX, touchEndY;
 let lastSpeed = 0;
 let peakSpeed = 0
 let timeToPeakSpeed = 0;
+let previousSpeed = 0;
+let previousTime = 0;
+let isDragging = false;
+let lastAcceleration = 0;
+let averageAcceleration = 0;
+let initialX = 0;
+let initialY = 0;
+let previousSpeed2 = 0;
+
 
 const startPoint = document.getElementById('startInnerDot');
 const targetPoint = document.getElementById('targetPoint');
@@ -30,12 +39,17 @@ document.addEventListener("touchstart", e => {
         pointer.id = touch.identifier
 
         document.body.append(pointer);
+        previousTime = startTime;
+        initialX = touchStartX;
+        initialY = touchStartY;
     }
 });
 
 //Finger is moving on the screen
 document.addEventListener("touchmove", e => {
     e.preventDefault();
+
+    isDragging = true;
 
     const touch = e.changedTouches[0];
     let currentX = touch.pageX;
@@ -47,6 +61,7 @@ document.addEventListener("touchmove", e => {
     pointer.style.top = `${touch.pageY}px`
     pointer.style.left = `${touch.pageX}px`
 
+    // Get the distance as finger moves on the screen
     let distance = calculateDistance(touchStartX, currentX, touchStartY, currentY);
     let time = currentTime - startTime;
 
@@ -58,6 +73,28 @@ document.addEventListener("touchmove", e => {
         peakSpeed = speed;
         timeToPeakSpeed = currentTime - startTime;
     }
+
+    //Something else to explore for acceleration
+    // let currentSpeed = distance / deltaTime;
+    //let acceleration = (currentSpeed - previousSpeed) / deltaTime;
+
+    let deltaTime = currentTime - previousTime;
+    let acceleration = (speed - previousSpeed) / deltaTime;
+    averageAcceleration = acceleration;
+
+    //Another  type of acceleration to be calculated here (Last Acceleration)
+    let distance2 = calculateDistance(initialX, currentX, initialY, currentY);
+    let time2 = currentTime - previousTime;
+    let speed2 = distance2 / time2;
+    let acceleration2 = (speed2 - previousSpeed2) / time2;
+    lastAcceleration = acceleration2;
+
+    previousSpeed = speed;
+    previousTime = currentTime;
+    initialX = currentX;
+    initialY = currentY;
+    previousSpeed2 = speed2;
+
 });
 
 
@@ -73,7 +110,7 @@ document.addEventListener("touchend", e => {
     //Calculating the distance covered
     const distance = calculateDistance(touchStartX, touchEndX, touchStartY, touchEndY);
 
-    // Calculating tap duration
+    // Calculating total duration
     if (startTime !== 0) {
         totalTime = calculateTotalTime(startTime);
     }
@@ -81,28 +118,38 @@ document.addEventListener("touchend", e => {
     //Calculating the drag speed
     const dragSpeed = calculateDragSpeed(distance, totalTime);
 
+    let tapDuration = isDragging ? null : totalTime;
+
+
     if (document.elementFromPoint(touch.clientX, touch.clientY) === targetPoint
         || document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
         alert(
             `Amazing! You hit the target!!!
+            Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
             Drag distance: ${distance.toFixed(2)} pixels
             Total duration: ${totalTime} ms
             Average drag speed: ${dragSpeed.toFixed(2)} px/ms
             Last speed: ${lastSpeed.toFixed(2)} px/ms
             Peak speed: ${peakSpeed.toFixed(2)} px/ms
-            Time to peak speed: ${timeToPeakSpeed} ms`
+            Time to peak speed: ${timeToPeakSpeed} ms
+            Last acceleration: ${lastAcceleration} ms^2
+            Average acceleration: ${averageAcceleration} ms^2`
         );
     }
     else {
         alert(
             `You did not hit the target. Please try again
+            Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
             Drag distance: ${distance.toFixed(2)} pixels
             Total duration: ${totalTime} ms
             Average drag speed: ${dragSpeed.toFixed(2)} px/ms
             Last speed: ${lastSpeed.toFixed(2)} px/ms
             Peak speed: ${peakSpeed.toFixed(2)} px/ms
-            Time to peak speed: ${timeToPeakSpeed} ms`
+            Time to peak speed: ${timeToPeakSpeed} ms
+            Last acceleration: ${lastAcceleration} ms^2
+            Average acceleration: ${averageAcceleration} ms^2`
         );
+        isDragging = false;
     }
 });
 
