@@ -13,7 +13,10 @@ let averageAcceleration = 0;
 let initialX = 0;
 let initialY = 0;
 let previousSpeed2 = 0;
-
+let modal = document.getElementById('resultsModal');
+let modalContent = document.getElementById('modalBodyContent');
+let results = null;
+let reachedTarget = false;
 
 const startPoint = document.getElementById('startInnerDot');
 const targetPoint = document.getElementById('targetPoint');
@@ -22,27 +25,27 @@ const targetInnerDot = document.getElementById('targetInnerDot');
 // At the touch start
 document.addEventListener("touchstart", e => {
     //Getting the current date at the start of the touch event
-    if (e.target === startPoint) {
+    //if (e.target === startPoint) {
 
-        //Get the first touch event
-        const touch = e.changedTouches[0];
-        touchStartX = touch.pageX;
-        touchStartY = touch.pageY;
+    //Get the first touch event
+    const touch = e.changedTouches[0];
+    touchStartX = touch.pageX;
+    touchStartY = touch.pageY;
 
-        startTime = Date.now();
+    startTime = Date.now();
 
-        // Create pointer to display a visual representation of where the finger is at any point
-        const pointer = document.createElement("div")
-        pointer.classList.add("dot")
-        pointer.style.top = `${touchStartY}px`
-        pointer.style.left = `${touchStartX}px`
-        pointer.id = touch.identifier
+    // Create pointer to display a visual representation of where the finger is at any point
+    const pointer = document.createElement("div")
+    pointer.classList.add("dot")
+    pointer.style.top = `${touchStartY}px`
+    pointer.style.left = `${touchStartX}px`
+    pointer.id = touch.identifier
 
-        document.body.append(pointer);
-        previousTime = startTime;
-        initialX = touchStartX;
-        initialY = touchStartY;
-    }
+    document.body.append(pointer);
+    previousTime = startTime;
+    initialX = touchStartX;
+    initialY = touchStartY;
+    //}
 });
 
 //Finger is moving on the screen
@@ -78,16 +81,19 @@ document.addEventListener("touchmove", e => {
     // let currentSpeed = distance / deltaTime;
     //let acceleration = (currentSpeed - previousSpeed) / deltaTime;
 
-    let deltaTime = currentTime - previousTime;
-    let acceleration = (speed - previousSpeed) / deltaTime;
-    averageAcceleration = acceleration;
-
     //Another  type of acceleration to be calculated here (Last Acceleration)
     let distance2 = calculateDistance(initialX, currentX, initialY, currentY);
     let time2 = currentTime - previousTime;
     let speed2 = distance2 / time2;
     let acceleration2 = (speed2 - previousSpeed2) / time2;
     lastAcceleration = acceleration2;
+    console.log(` Last acceleration: ${lastAcceleration.toFixed(8)}`);
+
+
+    //Average acceleration
+    let acceleration = (speed - previousSpeed) / (time);
+    averageAcceleration = acceleration;
+    console.log(` Average acceleration: ${averageAcceleration.toFixed(8)}`);
 
     previousSpeed = speed;
     previousTime = currentTime;
@@ -120,37 +126,29 @@ document.addEventListener("touchend", e => {
 
     let tapDuration = isDragging ? null : totalTime;
 
+    let tapAreaSize = Math.abs(touchStartX - touchEndX) * Math.abs(touchStartY - touchEndY);
+
 
     if (document.elementFromPoint(touch.clientX, touch.clientY) === targetPoint
         || document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
-        alert(
-            `Amazing! You hit the target!!!
-            Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
-            Drag distance: ${distance.toFixed(2)} pixels
-            Total duration: ${totalTime} ms
-            Average drag speed: ${dragSpeed.toFixed(2)} px/ms
-            Last speed: ${lastSpeed.toFixed(2)} px/ms
-            Peak speed: ${peakSpeed.toFixed(2)} px/ms
-            Time to peak speed: ${timeToPeakSpeed} ms
-            Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
-            Average acceleration: ${averageAcceleration.toFixed(8)} ms^2`
-        );
+        reachedTarget = true;
     }
-    else {
-        alert(
-            `You did not hit the target. Please try again
-            Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
-            Drag distance: ${distance.toFixed(2)} pixels
-            Total duration: ${totalTime} ms
-            Average drag speed: ${dragSpeed.toFixed(2)} px/ms
-            Last speed: ${lastSpeed.toFixed(2)} px/ms
-            Peak speed: ${peakSpeed.toFixed(2)} px/ms
-            Time to peak speed: ${timeToPeakSpeed} ms
-            Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
-            Average acceleration: ${averageAcceleration.toFixed(8)} ms^2`
-        );
-        isDragging = false;
-    }
+    results = `Target reached: ${reachedTarget}
+    Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
+    Drag distance: ${distance.toFixed(2)} pixels
+    Total duration: ${totalTime} ms
+    Average drag speed: ${dragSpeed.toFixed(2)} px/ms
+    Last speed: ${lastSpeed.toFixed(2)} px/ms
+    Peak speed: ${peakSpeed.toFixed(2)} px/ms
+    Time to peak speed: ${timeToPeakSpeed} ms
+    Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
+    Average acceleration: ${averageAcceleration.toFixed(8)} ms^2
+    Tap area: = ${tapAreaSize.toFixed(2)} px^2`;
+
+    modalContent.innerText = results;
+    modal.style.display = 'block'
+    isDragging = false;
+
 });
 
 // Function to calculate drag distance covered
@@ -172,4 +170,7 @@ function calculateTotalTime(startTime) {
 // Function to calculate drag speed
 function calculateDragSpeed(distance, duration) {
     return (distance / duration);
+}
+function closeModal() {
+    modal.style.display = 'none';
 }
