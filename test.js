@@ -148,7 +148,7 @@ document.addEventListener("touchend", e => {
     modalContent.innerText = results;
     modal.style.display = 'block'
     isDragging = false;
-
+    reachedTarget = false;
 });
 
 // Function to calculate drag distance covered
