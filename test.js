@@ -28,6 +28,7 @@ const targetPoint = document.getElementById('targetInnerDot');
 const coords = [];
 let numCoords = 0;
 
+// subMovements[i] = [x coord of i, y coord of i, current time, current time - previous sm time , current sm coord - previous sm coord];
 const subMovements = []
 let numSubMovements = 0;
 //const targetInnerDot = document.getElementById('targetInnerDot');
@@ -38,6 +39,16 @@ const screenHeight = window.innerHeight;
 console.log(`Viewport width: ${screenWidth}px`);
 console.log(`Viewport height: ${screenHeight}px`);
 
+function createSubDot() {
+    let dot = document.createElement('span');
+    dot.className = 'subdot';
+    let currX = coords[numCoords][0];
+    let currY = coords[numCoords][1];
+    dot.style.position = 'absolute';
+    dot.style.top = currY.toString() + 'px';
+    dot.style.left = currX.toString() + 'px';
+    document.body.appendChild(dot);
+}
 
 // At the touch start
 document.addEventListener("touchstart", e => {
@@ -63,20 +74,19 @@ document.addEventListener("touchstart", e => {
     initialX = touchStartX; //Store touch start x in another variable
     initialY = touchStartY; //Store touch start y in another variable
     totalDistanceTraveled = 0; //Distance is currently zero
+    subMovements[numSubMovements] = [initialX, initialY, previousTime, 0, 0];
+    numSubMovements = numSubMovements + 1;
+    coords[numCoords] = [initialX, initialY, previousTime];
+    createSubDot();
+    numCoords = numCoords + 1;
     //}
 });
 
-function createSubDot() {
-    subMovements[numSubMovements] = coords[numCoords];
+function enterSubMovement() {
+    let subTimeDiff = coords[numCoords][2] - subMovements[numSubMovements - 1][2];
+    let subDistDiff = calculateDistance(coords[numCoords][0], subMovements[numSubMovements - 1][0], coords[numCoords][1], subMovements[numSubMovements - 1][1]);
+    subMovements[numSubMovements] = [coords[numCoords][0], coords[numCoords][1], coords[numCoords][2], subTimeDiff, subDistDiff];
     numSubMovements = numSubMovements + 1;
-    let dot = document.createElement('span');
-    dot.className = 'subdot';
-    let currX = coords[numCoords][0];
-    let currY = coords[numCoords][1];
-    dot.style.position = 'absolute';
-    dot.style.top = currY.toString() + 'px';
-    dot.style.left = currX.toString() + 'px';
-    document.body.appendChild(dot);
 }
 
 function createTrail() {
@@ -110,6 +120,8 @@ function isSubMovement() {
                 createTrail();
             }
             else {
+
+                enterSubMovement();
                 createSubDot();
             }
         }
@@ -125,6 +137,7 @@ function isSubMovement() {
                 createTrail();
             }
             else {
+                enterSubMovement();
                 createSubDot();
             }
         }
@@ -140,11 +153,13 @@ function isSubMovement() {
                 createTrail();
             }
             else {
+                enterSubMovement();
                 createSubDot();
             }
         }
 
         else {
+            enterSubMovement();
             createSubDot();
         }
     }
@@ -220,6 +235,16 @@ document.addEventListener("touchend", e => {
     const touch = e.changedTouches[0];
     touchEndX = touch.pageX;
     touchEndY = touch.pageY;
+    let currentTime = Date.now();
+    let subTimeDiff = currentTime - subMovements[numSubMovements - 1][2];
+    let subDistDiff = calculateDistance(touchEndX, subMovements[numSubMovements - 1][0], touchEndY, subMovements[numSubMovements - 1][1]);
+    subMovements[numSubMovements] = [touchEndX, touchEndY, currentTime, subTimeDiff, subDistDiff];
+    numSubMovements = numSubMovements + 1;
+    coords[numCoords] = [touchEndX, touchEndY, currentTime];
+    createSubDot();
+    numCoords = numCoords + 1;
+
+
     const pointer = document.getElementById(touch.identifier);
     pointer.remove();
 
@@ -258,23 +283,10 @@ document.addEventListener("touchend", e => {
     if (document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
         reachedTarget = true;
     }
-    /*
-    results = `Number of Submovements: ${numSubMovements}
-    Number of movements: ${numCoords}
-    Target reached: ${reachedTarget}
-    Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
-    Straight line drag distance: ${straightLineDistance.toFixed(2)} px
-    Total Drag distance: ${totalDistanceTraveled.toFixed(2)} pixels
-    Total duration: ${totalTime} ms
-    Average drag speed: ${averageDragSpeed.toFixed(2)} px/ms
-    Last speed: ${lastSpeed.toFixed(2)} px/ms
-    Peak speed: ${peakSpeed.toFixed(2)} px/ms
-    Time to peak speed: ${timeToPeakSpeed} ms
-    Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
-    Average acceleration: ${averageAcceleration.toFixed(8)} ms^2
-    Tap area: ${tapAreaSize.toFixed(2)} px^2
-    Shortest Path Distance: ${shortestPathDistance.toFixed(2)} px `;
-    */
+
+    subMovements.forEach((el) => {
+        console.log(el);
+    })
 
     results = `Number of Submovements: ${numSubMovements}
     Number of movements: ${numCoords} `;
