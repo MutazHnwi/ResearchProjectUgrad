@@ -67,6 +67,8 @@ document.addEventListener("touchstart", e => {
 });
 
 function createSubDot() {
+    subMovements[numSubMovements] = coords[numCoords];
+    numSubMovements = numSubMovements + 1;
     let dot = document.createElement('span');
     dot.className = 'subdot';
     let currX = coords[numCoords][0];
@@ -90,58 +92,63 @@ function createTrail() {
 
 function isSubMovement() {
     if (numCoords > 1) {
-        if (((coords[numCoords - 2][0] < coords[numCoords - 1][0]) && (coords[numCoords - 1][0] < coords[numCoords][0])) || ((coords[numCoords - 2][0] > coords[numCoords - 1][0]) && (coords[numCoords - 1][0] > coords[numCoords][0]))) {
-            if (((coords[numCoords - 2][1] < coords[numCoords - 1][1]) && (coords[numCoords - 1][1] < coords[numCoords][1])) || ((coords[numCoords - 2][1] > coords[numCoords - 1][1]) && (coords[numCoords - 1][1] > coords[numCoords][1]))) {
+        let x0 = coords[numCoords - 2][0];
+        let x1 = coords[numCoords - 1][0];
+        let x2 = coords[numCoords][0];
+        let y0 = coords[numCoords - 2][1];
+        let y1 = coords[numCoords - 1][1];
+        let y2 = coords[numCoords][1];
+
+        if (x0 < x1 && x1 < x2) {
+            if (y0 == y1 && y1 == y2) {
+                createTrail();
+            }
+            else if (y0 < y1 && y1 < y2) {
+                createTrail();
+            }
+            else if (y0 > y1 && y1 > y2) {
                 createTrail();
             }
             else {
-                subMovements[numSubMovements] = coords[numCoords];
-                numSubMovements = numSubMovements + 1;
+                createSubDot();
+            }
+        }
+
+        else if (x0 > x1 && x1 > x2) {
+            if (y0 == y1 && y1 == y2) {
+                createTrail();
+            }
+            else if (y0 < y1 && y1 < y2) {
+                createTrail();
+            }
+            else if (y0 > y1 && y1 > y2) {
+                createTrail();
+            }
+            else {
+                createSubDot();
+            }
+        }
+
+        else if (x0 == x1 && x1 == x2) {
+            if (y0 == y1 && y1 == y2) {
+                createTrail();
+            }
+            else if (y0 < y1 && y1 < y2) {
+                createTrail();
+            }
+            else if (y0 > y1 && y1 > y2) {
+                createTrail();
+            }
+            else {
                 createSubDot();
             }
         }
 
         else {
-            subMovements[numSubMovements] = coords[numCoords];
-            numSubMovements = numSubMovements + 1;
             createSubDot();
         }
     }
 }
-
-
-/*
-if (coords[numCoords - 1][0] > coords[numCoords][0] && coords[numCoords - 1][0] > coords[numCoords - 2][0]) {
-            subMovements[numSubMovements] = coords[numCoords];
-            numSubMovements = numSubMovements + 1;
-            createSubDot();
-            console.log(`1 X: ${coords[numCoords][0]}, 1 Y: ${coords[numCoords][1]}`);
-        }
-
-        else if (coords[numCoords - 1][0] < coords[numCoords][0] && coords[numCoords - 1][0] < coords[numCoords - 2][0]) {
-            subMovements[numSubMovements] = coords[numCoords];
-            numSubMovements = numSubMovements + 1;
-            createSubDot();
-            console.log(`2 X: ${coords[numCoords][0]}, 2 Y: ${coords[numCoords][1]}`);
-        }
-
-        else if (coords[numCoords - 1][1] < coords[numCoords][1] && coords[numCoords - 1][1] < coords[numCoords - 2][1]) {
-            subMovements[numSubMovements] = coords[numCoords];
-            numSubMovements = numSubMovements + 1;
-            createSubDot();
-            console.log(`3 X: ${coords[numCoords][0]}, 3 Y: ${coords[numCoords][1]}`);
-        }
-
-        else if (coords[numCoords - 1][1] > coords[numCoords][1] && coords[numCoords - 1][1] > coords[numCoords - 2][1]) {
-            subMovements[numSubMovements] = coords[numCoords];
-            numSubMovements = numSubMovements + 1;
-            createSubDot();
-            console.log(`4 X: ${coords[numCoords][0]}, 4 Y: ${coords[numCoords][1]}`);
-        }
-        else {
-            createTrail();
-        }
-*/
 
 //Finger is moving on the screen
 document.addEventListener("touchmove", e => {
