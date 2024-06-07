@@ -7,6 +7,22 @@
     transform: translate(-50%, -50%);
 }
 
+.subdot {
+    height: 5px;
+    width: 5px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.traildot {
+    height: 5px;
+    width: 5px;
+    background-color: black;
+    border-radius: 50%;
+    display: inline-block;
+}
+
 #text-style {
     background-color: red;
 }

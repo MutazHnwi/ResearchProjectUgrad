@@ -24,6 +24,12 @@ let totalDistanceTraveled = 0;
 
 const startPoint = document.getElementById('startInnerDot');
 const targetPoint = document.getElementById('targetInnerDot');
+
+const coords = [];
+let numCoords = 0;
+
+const subMovements = []
+let numSubMovements = 0;
 //const targetInnerDot = document.getElementById('targetInnerDot');
 
 const screenWidth = window.innerWidth;
@@ -60,6 +66,82 @@ document.addEventListener("touchstart", e => {
     //}
 });
 
+function createSubDot() {
+    let dot = document.createElement('span');
+    dot.className = 'subdot';
+    let currX = coords[numCoords][0];
+    let currY = coords[numCoords][1];
+    dot.style.position = 'absolute';
+    dot.style.top = currY.toString() + 'px';
+    dot.style.left = currX.toString() + 'px';
+    document.body.appendChild(dot);
+}
+
+function createTrail() {
+    let dot = document.createElement('span');
+    dot.className = 'traildot';
+    let currX = coords[numCoords][0];
+    let currY = coords[numCoords][1];
+    dot.style.position = 'absolute';
+    dot.style.top = currY.toString() + 'px';
+    dot.style.left = currX.toString() + 'px';
+    document.body.appendChild(dot);
+}
+
+function isSubMovement() {
+    if (numCoords > 1) {
+        if (((coords[numCoords - 2][0] < coords[numCoords - 1][0]) && (coords[numCoords - 1][0] < coords[numCoords][0])) || ((coords[numCoords - 2][0] > coords[numCoords - 1][0]) && (coords[numCoords - 1][0] > coords[numCoords][0]))) {
+            if (((coords[numCoords - 2][1] < coords[numCoords - 1][1]) && (coords[numCoords - 1][1] < coords[numCoords][1])) || ((coords[numCoords - 2][1] > coords[numCoords - 1][1]) && (coords[numCoords - 1][1] > coords[numCoords][1]))) {
+                createTrail();
+            }
+            else {
+                subMovements[numSubMovements] = coords[numCoords];
+                numSubMovements = numSubMovements + 1;
+                createSubDot();
+            }
+        }
+
+        else {
+            subMovements[numSubMovements] = coords[numCoords];
+            numSubMovements = numSubMovements + 1;
+            createSubDot();
+        }
+    }
+}
+
+
+/*
+if (coords[numCoords - 1][0] > coords[numCoords][0] && coords[numCoords - 1][0] > coords[numCoords - 2][0]) {
+            subMovements[numSubMovements] = coords[numCoords];
+            numSubMovements = numSubMovements + 1;
+            createSubDot();
+            console.log(`1 X: ${coords[numCoords][0]}, 1 Y: ${coords[numCoords][1]}`);
+        }
+
+        else if (coords[numCoords - 1][0] < coords[numCoords][0] && coords[numCoords - 1][0] < coords[numCoords - 2][0]) {
+            subMovements[numSubMovements] = coords[numCoords];
+            numSubMovements = numSubMovements + 1;
+            createSubDot();
+            console.log(`2 X: ${coords[numCoords][0]}, 2 Y: ${coords[numCoords][1]}`);
+        }
+
+        else if (coords[numCoords - 1][1] < coords[numCoords][1] && coords[numCoords - 1][1] < coords[numCoords - 2][1]) {
+            subMovements[numSubMovements] = coords[numCoords];
+            numSubMovements = numSubMovements + 1;
+            createSubDot();
+            console.log(`3 X: ${coords[numCoords][0]}, 3 Y: ${coords[numCoords][1]}`);
+        }
+
+        else if (coords[numCoords - 1][1] > coords[numCoords][1] && coords[numCoords - 1][1] > coords[numCoords - 2][1]) {
+            subMovements[numSubMovements] = coords[numCoords];
+            numSubMovements = numSubMovements + 1;
+            createSubDot();
+            console.log(`4 X: ${coords[numCoords][0]}, 4 Y: ${coords[numCoords][1]}`);
+        }
+        else {
+            createTrail();
+        }
+*/
 
 //Finger is moving on the screen
 document.addEventListener("touchmove", e => {
@@ -71,6 +153,11 @@ document.addEventListener("touchmove", e => {
     let currentX = touch.pageX; //Store current x location as finger is moving
     let currentY = touch.pageY; //Store current y location as finger is moving
     let currentTime = Date.now();
+
+
+    coords[numCoords] = [currentX, currentY, currentTime];
+    isSubMovement();
+    numCoords = numCoords + 1;
 
     // Visual representation of where the finger is at any point
     const pointer = document.getElementById(touch.identifier)
@@ -164,7 +251,10 @@ document.addEventListener("touchend", e => {
     if (document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
         reachedTarget = true;
     }
-    results = `Target reached: ${reachedTarget}
+    /*
+    results = `Number of Submovements: ${numSubMovements}
+    Number of movements: ${numCoords}
+    Target reached: ${reachedTarget}
     Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
     Straight line drag distance: ${straightLineDistance.toFixed(2)} px
     Total Drag distance: ${totalDistanceTraveled.toFixed(2)} pixels
@@ -177,6 +267,10 @@ document.addEventListener("touchend", e => {
     Average acceleration: ${averageAcceleration.toFixed(8)} ms^2
     Tap area: ${tapAreaSize.toFixed(2)} px^2
     Shortest Path Distance: ${shortestPathDistance.toFixed(2)} px `;
+    */
+
+    results = `Number of Submovements: ${numSubMovements}
+    Number of movements: ${numCoords} `;
 
     modalContent.innerText = results;
     modal.style.display = 'block'
