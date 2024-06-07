@@ -21,6 +21,7 @@ let modalContent = document.getElementById('modalBodyContent');
 let results = null;
 let reachedTarget = false;
 let totalDistanceTraveled = 0;
+let end = 0;
 
 const startPoint = document.getElementById('startInnerDot');
 const targetPoint = document.getElementById('targetInnerDot');
@@ -42,8 +43,16 @@ console.log(`Viewport height: ${screenHeight}px`);
 function createSubDot() {
     let dot = document.createElement('span');
     dot.className = 'subdot';
-    let currX = coords[numCoords][0];
-    let currY = coords[numCoords][1];
+    let currX = 0;
+    let currY = 0;
+    if (numCoords === 0 || end === 1) {
+        currX = coords[numCoords][0];
+        currY = coords[numCoords][1];
+    }
+    else {
+        currX = coords[numCoords - 1][0];
+        currY = coords[numCoords - 1][1];
+    }
     dot.style.position = 'absolute';
     dot.style.top = currY.toString() + 'px';
     dot.style.left = currX.toString() + 'px';
@@ -241,8 +250,10 @@ document.addEventListener("touchend", e => {
     subMovements[numSubMovements] = [touchEndX, touchEndY, currentTime, subTimeDiff, subDistDiff];
     numSubMovements = numSubMovements + 1;
     coords[numCoords] = [touchEndX, touchEndY, currentTime];
+    end = 1;
     createSubDot();
     numCoords = numCoords + 1;
+    console.log("end");
 
 
     const pointer = document.getElementById(touch.identifier);
