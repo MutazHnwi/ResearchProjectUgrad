@@ -35,6 +35,7 @@ console.log(`Viewport height: ${screenHeight}px`);
 
 // At the touch start
 document.addEventListener("touchstart", e => {
+    if (modal.style.display == 'block') { return; }
     //Getting the current date at the start of the touch event
     //if (e.target === startPoint) {
 
@@ -63,7 +64,8 @@ document.addEventListener("touchstart", e => {
 
 //Finger is moving on the screen
 document.addEventListener("touchmove", e => {
-    e.preventDefault();
+    if (modal.style.display == 'block') { return; }
+    // e.preventDefault();
 
     isDragging = true; //Turn on flag when finger moves on the screen
 
@@ -77,6 +79,11 @@ document.addEventListener("touchmove", e => {
     pointer.style.top = `${touch.pageY}px`
     pointer.style.left = `${touch.pageX}px`
 
+    //* Prevents the page from refreshing when swiping down on mobile devices
+    let distanceY = initialY - currentY;
+    if (distanceY < 0) {
+        e.preventDefault();
+    }
 
     //Calculate distance from the last point
     let changeInDistance = calculateDistance(initialX, currentX, initialY, currentY);
@@ -117,12 +124,12 @@ document.addEventListener("touchmove", e => {
     initialY = currentY; //update start position for the next move
     previousChangeInSpeed = changeInSpeed; //update  speed for the next move
 
-});
+}, { passive: false });
 
 
 //Finger leaves the screen
 document.addEventListener("touchend", e => {
-
+    if (modal.style.display == 'block') { return; }
     const touch = e.changedTouches[0];
     touchEndX = touch.pageX;
     touchEndY = touch.pageY;
@@ -222,3 +229,12 @@ function getShortestPathDistance() {
 function closeModal() {
     modal.style.display = 'none';
 }
+
+/* ---NOTES---
+
+* if (modal.style.display == 'block') { return; } ===> to prevent from overwriting original (last) values when attempting to close the modal or when touching the screen in general
+*
+*
+*
+
+---END NOTES--- */
