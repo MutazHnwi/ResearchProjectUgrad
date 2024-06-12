@@ -3,37 +3,171 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE-edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="style.css" rel="stylesheet" />
-  <title>Touch Events Example</title>
-  <script src="test.js" defer> </script>
+  <title>Start Page</title>
+  <style>
+    #startPage {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60vh;
+      gap: 10px;
+      padding: 5px;
+    }
+
+    .subtle-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #333;
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .subtle-button:hover {
+      background-color: #e0e0e0;
+      border-color: #ccc;
+    }
+
+    .subtle-button:active {
+      background-color: #d0d0d0;
+      border-color: #bbb;
+    }
+
+    .subtle-button:focus {
+      box-shadow: 0 0 0 3px rgba(100, 150, 250, 0.5);
+    }
+
+    .subtle-button:disabled {
+      background-color: #f5f5f5;
+      color: #aaa;
+      border-color: #ddd;
+      cursor: not-allowed;
+    }
+
+    #resetBtn {
+      display: block;
+      font-weight: bold;
+    }
+
+    #resultTable {
+      margin: 0 auto;
+      border-collapse: collapse;
+      display: none;
+    }
+
+    #resultTable th,
+    #resultTable td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    #resultTable th {
+      background-color: #f4f4f4;
+      font-weight: bold;
+    }
+
+    #goDev {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      z-index: 9999;
+      padding: 25px;
+    }
+
+    #newFeatureRow {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="startPoint">
-    <div id="startInnerDot"></div>
-    <span class="label">Start</span>
+  <!-- Result Table -->
+  <table id="resultTable">
+    <tr>
+      <th>Feature</th>
+      <th>Player 1</th>
+      <th>Player 2</th>
+    </tr>
+    <tr>
+      <td>Duration</td>
+      <td id="p1Duration"></td>
+      <td id="p2Duration"></td>
+    </tr>
+    <tr>
+      <td>Distance</td>
+      <td id="p1Distance"></td>
+      <td id="p2Distance"></td>
+    </tr>
+    <tr id="newFeatureRow">
+      <td>New Feature</td>
+      <td colspan="2" id="newFeatureEntry">3</td>
+    </tr>
+  </table>
+
+  <div id="startPage">
+    <!-- Buttons -->
+    <button class="subtle-button" id="player1Btn">Begin Player (1)</button>
+    <button class="subtle-button" id="player2Btn">Begin Player (2)</button>
+    <button class="subtle-button" onclick="sessionStorage.clear(); location.reload();" id="resetBtn">Reset</button>
   </div>
 
-  <div id="targetPoint">
-    <div id="targetInnerDot"></div>
-    <div class="label">Target</div>
+  <div id="goDev">
+    <a href="new-feature.html">Dev Mode</a>
   </div>
 
-  <div id="resultsModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="modal-title">Drag Results</span>
-        <span class="modal-close" onclick="closeModal()">&times;</span>
-      </div>
-      <div class="modal-body" id="modalBodyContent">
-      </div>
-      <div class="modal-footer">
-        <button onclick="closeModal()">Close</button>
-      </div>
-    </div>
-  </div>
+  <script>
+    // DO NOT EDIT CODE
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('DOM fully loaded and parsed');
+
+      const startPage = document.getElementById('startPage');
+      const mainInterface = document.getElementById('mainInterface');
+      const player1Btn = document.getElementById('player1Btn');
+      const player2Btn = document.getElementById('player2Btn');
+      const newFeatureRow = document.getElementById('newFeatureRow');
+      const newFeatureEntry = document.getElementById('newFeatureEntry');
+
+
+      if (sessionStorage.getItem('player1') == 'true') { // if player1 has completed the test
+        const p1Data = JSON.parse(sessionStorage.getItem('resultsP1'));
+        document.getElementById('p1Duration').innerHTML = p1Data['Total Duration'] + ' ms';
+        document.getElementById('p1Distance').innerHTML = p1Data['Total Drag Distance'] + ' px';
+        player1Btn.style.display = 'none';
+        document.getElementById("resultTable").style.display = 'table';
+      }
+      if (sessionStorage.getItem('player2') == 'true') { // if player2 has completed the test
+        const p2Data = JSON.parse(sessionStorage.getItem('resultsP2'));
+        document.getElementById('p2Duration').innerHTML = p2Data['Total Duration'] + ' ms';
+        document.getElementById('p2Distance').innerHTML = p2Data['Total Drag Distance'] + ' px';
+        player2Btn.style.display = 'none';
+        document.getElementById("resultTable").style.display = 'table';
+      }
+      if (sessionStorage.getItem('new_feature')) {
+        newFeatureRow.style.display = "table-row";
+        newFeatureEntry.innerHTML = sessionStorage.getItem('new_feature');
+        console.log(typeof sessionStorage.getItem('new_feature'));
+
+      }
+
+      player1Btn.addEventListener('click', () => { //p1 begins test
+        sessionStorage.setItem('player1', true);
+        window.location.href = "main.html";
+      });
+
+      player2Btn.addEventListener('click', () => { //p2 begins test
+        sessionStorage.setItem('player2', true);
+        window.location.href = "main.html";
+      });
+
+    });
+
+
+  </script>
 </body>
 
 </html>

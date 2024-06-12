@@ -37,6 +37,7 @@ console.log(`Viewport height: ${screenHeight}px`);
 document.addEventListener("touchstart", e => {
     //Getting the current date at the start of the touch event
     //if (e.target === startPoint) {
+    if (modal.style.display == 'block') { return; }
 
     //Get the first touch event
     const touch = e.changedTouches[0];
@@ -64,6 +65,7 @@ document.addEventListener("touchstart", e => {
 //Finger is moving on the screen
 document.addEventListener("touchmove", e => {
     e.preventDefault();
+    if (modal.style.display == 'block') { return; }
 
     isDragging = true; //Turn on flag when finger moves on the screen
 
@@ -122,6 +124,7 @@ document.addEventListener("touchmove", e => {
 
 //Finger leaves the screen
 document.addEventListener("touchend", e => {
+    if (modal.style.display == 'block') { return; }
 
     const touch = e.changedTouches[0];
     touchEndX = touch.pageX;
@@ -164,24 +167,56 @@ document.addEventListener("touchend", e => {
     if (document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
         reachedTarget = true;
     }
-    results = `Target reached: ${reachedTarget}
-    Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
-    Straight line drag distance: ${straightLineDistance.toFixed(2)} px
-    Total Drag distance: ${totalDistanceTraveled.toFixed(2)} pixels
-    Total duration: ${totalTime} ms
-    Average drag speed: ${averageDragSpeed.toFixed(2)} px/ms
-    Last speed: ${lastSpeed.toFixed(2)} px/ms
-    Peak speed: ${peakSpeed.toFixed(2)} px/ms
-    Time to peak speed: ${timeToPeakSpeed} ms
-    Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
-    Average acceleration: ${averageAcceleration.toFixed(8)} ms^2
-    Tap area: ${tapAreaSize.toFixed(2)} px^2
-    Shortest Path Distance: ${shortestPathDistance.toFixed(2)} px `;
+    results = `Target Reached: ${reachedTarget}
+    Total Drag Distance: ${totalDistanceTraveled.toFixed(2)} pixels
+    Total Duration: ${totalTime} ms`;
 
-    modalContent.innerText = results;
-    modal.style.display = 'block'
+    const lines = results.split('\n');
+    const resultObj = {};
+
+    lines.forEach(line => {
+        const [key, value] = line.split(':').map(str => str.trim());
+        if (key && value) {
+            if (value.includes('pixels')) {
+                resultObj[key] = parseFloat(value);
+            } else if (value.includes('ms')) {
+                resultObj[key] = parseInt(value);
+            } else if (value === 'true' || value === 'false') {
+                resultObj[key] = value === 'true';
+            } else {
+                resultObj[key] = value;
+            }
+        }
+    });
+
+    const resultsStringify = JSON.stringify(resultObj);
+
+
+    // results = `Target reached: ${reachedTarget}
+    // Tap duration: ${tapDuration !== null ? tapDuration : 'Not a tap'} ms
+    // Straight line drag distance: ${straightLineDistance.toFixed(2)} px
+    // Total Drag distance: ${totalDistanceTraveled.toFixed(2)} pixels
+    // Total duration: ${totalTime} ms
+    // Average drag speed: ${averageDragSpeed.toFixed(2)} px/ms
+    // Last speed: ${lastSpeed.toFixed(2)} px/ms
+    // Peak speed: ${peakSpeed.toFixed(2)} px/ms
+    // Time to peak speed: ${timeToPeakSpeed} ms
+    // Last acceleration: ${lastAcceleration.toFixed(8)} ms^2
+    // Average acceleration: ${averageAcceleration.toFixed(8)} ms^2
+    // Tap area: ${tapAreaSize.toFixed(2)} px^2
+    // Shortest Path Distance: ${shortestPathDistance.toFixed(2)} px `;
+
     isDragging = false;
     reachedTarget = false;
+    modalContent.innerText = results;
+    modal.style.display = 'block'
+    if (sessionStorage.getItem('player1') == 'true' && !sessionStorage.getItem('resultsP1')) {
+        sessionStorage.setItem('resultsP1', resultsStringify);
+    }
+    if (sessionStorage.getItem('player2') == 'true' && !sessionStorage.getItem('resultsP2')) {
+        sessionStorage.setItem('resultsP2', resultsStringify);
+    }
+    // sessionStorage.setItem('results', results);
 });
 
 // Function to calculate drag distance covered
@@ -221,4 +256,15 @@ function getShortestPathDistance() {
 }
 function closeModal() {
     modal.style.display = 'none';
+    window.location.href = "index.html";
 }
+
+
+/* ---NOTES---
+
+* if (modal.style.display == 'block') { return; } ===> to prevent from overwriting original (last) values when attempting to close the modal
+*
+*
+*
+
+---END NOTES--- */
