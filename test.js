@@ -24,7 +24,11 @@ let totalDistanceTraveled = 0;
 let end = 0;
 
 const startPoint = document.getElementById('startInnerDot');
+const checkpoint1 = document.getElementById('checkpoint1Inner');
+const checkpointA = document.getElementById('checkpointAInner');
 const targetPoint = document.getElementById('targetInnerDot');
+const checkpoints = [startPoint, checkpoint1, checkpointA, targetPoint];
+let phase = 0; // index of checkpoints representing the next point to go to
 
 const coords = [];
 let numCoords = 0;
@@ -184,7 +188,14 @@ document.addEventListener("touchmove", e => {
     let currentX = touch.pageX; //Store current x location as finger is moving
     let currentY = touch.pageY; //Store current y location as finger is moving
     let currentTime = Date.now();
+    let currentElements = document.elementsFromPoint(currentX, currentY);
 
+    if (currentElements.includes(checkpoints[phase])) {
+	phase++;
+    } else if (currentElements.includes(checkpoints[phase + 1])) {
+	modalContent.innerText = `Incorrect, phase = ${phase}`;
+	modal.style.display = 'block';
+    }
 
     coords[numCoords] = [currentX, currentY, currentTime];
     isSubMovement();
@@ -300,7 +311,7 @@ document.addEventListener("touchend", e => {
     })
 
     results = `Number of Submovements: ${numSubMovements}
-    Number of movements: ${numCoords} `;
+    Number of movements: ${numCoords}`;
 
     modalContent.innerText = results;
     modal.style.display = 'block'

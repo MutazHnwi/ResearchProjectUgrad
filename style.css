@@ -53,6 +53,32 @@ body {
     transform: translate(-50%, -50%);
 }
 
+#checkpoint1 {
+    width: 80px;
+    height: 80px;
+    background-color: blue;
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    border-radius: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+#checkpointA {
+    width: 80px;
+    height: 80px;
+    background-color: blue;
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    border-radius: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
 #targetPoint {
     width: 80px;
     height: 80px;
@@ -68,6 +94,8 @@ body {
 }
 
 #startInnerDot,
+#checkpoint1Inner,
+#checkpointAInner,
 #targetInnerDot {
     width: 25px;
     height: 25px;
