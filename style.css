@@ -78,6 +78,26 @@ body {
     left: 200px;
 }
 
+#checkpoint3 {
+    top: 50px;
+    left: 100px;
+}
+
+#checkpointC {
+    bottom: 50px;
+    right: 100px;
+}
+
+#checkpoint4 {
+    top: 50px;
+    left: 400px;
+}
+
+#checkpointD {
+    bottom: 50px;
+    left: 100px;
+}
+
 .checkpointInner {
     width: 25px;
     height: 25px;

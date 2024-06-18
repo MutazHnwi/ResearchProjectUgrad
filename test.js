@@ -28,16 +28,24 @@ const checkpoint1 = document.getElementById('checkpoint1');
 const checkpointA = document.getElementById('checkpointA');
 const checkpoint2 = document.getElementById('checkpoint2');
 const checkpointB = document.getElementById('checkpointB');
+const checkpoint3 = document.getElementById('checkpoint3');
+const checkpointC = document.getElementById('checkpointC');
+const checkpoint4 = document.getElementById('checkpoint4');
+const checkpointD = document.getElementById('checkpointD');
 
-const checkpoints = [startPoint, checkpoint1, checkpointA, checkpoint2, checkpointB];
+const checkpoints = [startPoint, checkpoint1, checkpointA, checkpoint2, checkpointB, checkpoint3, checkpointC, checkpoint4, checkpointD];
 
 const startPointInner = document.getElementById('startInnerDot');
 const checkpoint1Inner = document.getElementById('checkpoint1Inner');
 const checkpointAInner = document.getElementById('checkpointAInner');
 const checkpoint2Inner = document.getElementById('checkpoint2Inner');
 const checkpointBInner = document.getElementById('checkpointBInner');
+const checkpoint3Inner = document.getElementById('checkpoint3Inner');
+const checkpointCInner = document.getElementById('checkpointCInner');
+const checkpoint4Inner = document.getElementById('checkpoint4Inner');
+const checkpointDInner = document.getElementById('checkpointDInner');
 
-const checkpointsInner = [startPointInner, checkpoint1Inner, checkpointAInner, checkpoint2Inner, checkpointBInner];
+const checkpointsInner = [startPointInner, checkpoint1Inner, checkpointAInner, checkpoint2Inner, checkpointBInner, checkpoint3Inner, checkpointCInner, checkpoint4Inner, checkpointDInner];
 let phase = 0; // index of checkpoints representing the next point to go to
 
 const coords = [];
