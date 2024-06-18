@@ -35,17 +35,6 @@ const checkpointD = document.getElementById('checkpointD');
 
 const checkpoints = [startPoint, checkpoint1, checkpointA, checkpoint2, checkpointB, checkpoint3, checkpointC, checkpoint4, checkpointD];
 
-const startPointInner = document.getElementById('startInnerDot');
-const checkpoint1Inner = document.getElementById('checkpoint1Inner');
-const checkpointAInner = document.getElementById('checkpointAInner');
-const checkpoint2Inner = document.getElementById('checkpoint2Inner');
-const checkpointBInner = document.getElementById('checkpointBInner');
-const checkpoint3Inner = document.getElementById('checkpoint3Inner');
-const checkpointCInner = document.getElementById('checkpointCInner');
-const checkpoint4Inner = document.getElementById('checkpoint4Inner');
-const checkpointDInner = document.getElementById('checkpointDInner');
-
-const checkpointsInner = [startPointInner, checkpoint1Inner, checkpointAInner, checkpoint2Inner, checkpointBInner, checkpoint3Inner, checkpointCInner, checkpoint4Inner, checkpointDInner];
 let phase = 0; // index of checkpoints representing the next point to go to
 
 const coords = [];
@@ -91,7 +80,7 @@ document.addEventListener("touchstart", e => {
     touchStartX = touch.pageX;
     touchStartY = touch.pageY;
     // Advance Phase if starting on startpoint
-    if (document.elementsFromPoint(touchStartX, touchStartY).includes(checkpointsInner[0])) {
+    if (document.elementsFromPoint(touchStartX, touchStartY).includes(checkpoints[0])) {
 	phase = 1;
 	checkpoints[1].style.display = "flex";
 	checkpoints[2].style.display = "flex";
@@ -214,14 +203,14 @@ document.addEventListener("touchmove", e => {
     let currentTime = Date.now();
     let currentElements = document.elementsFromPoint(currentX, currentY);
 
-    if (currentElements.includes(checkpointsInner[phase])) {
+    if (currentElements.includes(checkpoints[phase])) {
 	phase++;
 	checkpoints[phase - 2].style.display = 'none';
 	if (!(phase + 1 >= checkpoints.length)) {
 	    checkpoints[phase + 1].style.display = 'flex';
 	} 
 	
-    } else if (currentElements.includes(checkpointsInner[phase + 1])) {
+    } else if (currentElements.includes(checkpoints[phase + 1])) {
 	modalContent.innerText = `Incorrect, phase = ${phase}`;
 	modal.style.display = 'block';
     }
