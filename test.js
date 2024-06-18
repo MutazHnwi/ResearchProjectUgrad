@@ -72,6 +72,10 @@ document.addEventListener("touchstart", e => {
     const touch = e.changedTouches[0];
     touchStartX = touch.pageX;
     touchStartY = touch.pageY;
+    // Advance Phase if starting on startpoint
+    if (document.elementsFromPoint(touchStartX, touchStartY).includes(checkpoints[0])) {
+	phase = 1;
+    }
 
     startTime = Date.now();
 
@@ -313,10 +317,12 @@ document.addEventListener("touchend", e => {
     results = `Number of Submovements: ${numSubMovements}
     Number of movements: ${numCoords}`;
 
-    modalContent.innerText = results;
-    modal.style.display = 'block'
-    isDragging = false;
-    reachedTarget = false;
+    if (modal.style.display != 'block') {
+	modalContent.innerText = results;
+	modal.style.display = 'block'
+	isDragging = false;
+	reachedTarget = false;
+    }
 });
 
 // Function to calculate drag distance covered
