@@ -51,11 +51,10 @@ body {
 }
 
 #startPoint {
-    top: 50px;
-    left: 50px;
+    bottom: 50px;
+    left: calc(50% - 80px);
     background-color: green;
     display: flex;
-    /*transform: translate(-50%, -50%);*/
 }
 
 #checkpoint1 {
