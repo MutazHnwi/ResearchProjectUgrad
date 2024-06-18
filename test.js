@@ -23,11 +23,21 @@ let reachedTarget = false;
 let totalDistanceTraveled = 0;
 let end = 0;
 
-const startPoint = document.getElementById('startInnerDot');
-const checkpoint1 = document.getElementById('checkpoint1Inner');
-const checkpointA = document.getElementById('checkpointAInner');
-const targetPoint = document.getElementById('targetInnerDot');
-const checkpoints = [startPoint, checkpoint1, checkpointA, targetPoint];
+const startPoint = document.getElementById('startPoint');
+const checkpoint1 = document.getElementById('checkpoint1');
+const checkpointA = document.getElementById('checkpointA');
+const checkpoint2 = document.getElementById('checkpoint2');
+const checkpointB = document.getElementById('checkpointB');
+
+const checkpoints = [startPoint, checkpoint1, checkpointA, checkpoint2, checkpointB];
+
+const startPointInner = document.getElementById('startInnerDot');
+const checkpoint1Inner = document.getElementById('checkpoint1Inner');
+const checkpointAInner = document.getElementById('checkpointAInner');
+const checkpoint2Inner = document.getElementById('checkpoint2Inner');
+const checkpointBInner = document.getElementById('checkpointBInner');
+
+const checkpointsInner = [startPointInner, checkpoint1Inner, checkpointAInner, checkpoint2Inner, checkpointBInner];
 let phase = 0; // index of checkpoints representing the next point to go to
 
 const coords = [];
@@ -73,8 +83,10 @@ document.addEventListener("touchstart", e => {
     touchStartX = touch.pageX;
     touchStartY = touch.pageY;
     // Advance Phase if starting on startpoint
-    if (document.elementsFromPoint(touchStartX, touchStartY).includes(checkpoints[0])) {
+    if (document.elementsFromPoint(touchStartX, touchStartY).includes(checkpointsInner[0])) {
 	phase = 1;
+	checkpoints[1].style.display = "flex";
+	checkpoints[2].style.display = "flex";
     }
 
     startTime = Date.now();
@@ -194,9 +206,14 @@ document.addEventListener("touchmove", e => {
     let currentTime = Date.now();
     let currentElements = document.elementsFromPoint(currentX, currentY);
 
-    if (currentElements.includes(checkpoints[phase])) {
+    if (currentElements.includes(checkpointsInner[phase])) {
 	phase++;
-    } else if (currentElements.includes(checkpoints[phase + 1])) {
+	checkpoints[phase - 2].style.display = 'none';
+	if (!(phase + 1 >= checkpoints.length)) {
+	    checkpoints[phase + 1].style.display = 'flex';
+	} 
+	
+    } else if (currentElements.includes(checkpointsInner[phase + 1])) {
 	modalContent.innerText = `Incorrect, phase = ${phase}`;
 	modal.style.display = 'block';
     }
@@ -294,22 +311,22 @@ document.addEventListener("touchend", e => {
     //This captures the rectangular area defined by the start and end points of a touch gesture on the screen. 
     let tapAreaSize = Math.abs(touchStartX - touchEndX) * Math.abs(touchStartY - touchEndY);
 
-    let startRect = startPoint.getBoundingClientRect();
-    let targetRect = targetPoint.getBoundingClientRect();
+    let startRect = startPointInner.getBoundingClientRect();
+    //let targetRect = targetPoint.getBoundingClientRect();
 
     let startX = startRect.left + startRect.width / 2;
     let startY = startRect.top + startRect.height / 2;
 
-    let targetX = targetRect.left + targetRect.width / 2;
-    let targetY = targetRect.top + targetRect.height / 2;
-    let shortestPathDistance = calculateDistance(startX, targetX, startY, targetY); // The shortest path to follow from start to target
+    //let targetX = targetRect.left + targetRect.width / 2;
+    //let targetY = targetRect.top + targetRect.height / 2;
+    //let shortestPathDistance = calculateDistance(startX, targetX, startY, targetY); // The shortest path to follow from start to target
 
     // || document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot
-
+    /*
     if (document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
         reachedTarget = true;
     }
-
+    */
     subMovements.forEach((el) => {
         console.log(el);
     })
@@ -346,7 +363,7 @@ function calculateDragSpeed(distance, duration) {
     return (distance / duration);
 }
 function getShortestPathDistance() {
-    let startRect = startPoint.getBoundingClientRect();
+    let startRect = startPointInner.getBoundingClientRect();
     let targetRect = targetPoint.getBoundingClientRect();
 
     let startX = startRect.left + startRect.width / 2;

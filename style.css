@@ -38,65 +38,47 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#startPoint {
+.checkpoint { 
     width: 80px;
     height: 80px;
-    background-color: green;
+    background-color: blue;
     position: absolute;
-    top: 50px;
-    left: 50px;
     touch-action: none;
     border-radius: 70%;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: right;
-    transform: translate(-50%, -50%);
+}
+
+#startPoint {
+    top: 50px;
+    left: 50px;
+    background-color: green;
+    display: flex;
+    /*transform: translate(-50%, -50%);*/
 }
 
 #checkpoint1 {
-    width: 80px;
-    height: 80px;
-    background-color: blue;
-    position: absolute;
     top: 50px;
     right: 50px;
-    border-radius: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: right;
 }
 
 #checkpointA {
-    width: 80px;
-    height: 80px;
-    background-color: blue;
-    position: absolute;
     bottom: 50px;
     left: 50px;
-    border-radius: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: right;
 }
 
-#targetPoint {
-    width: 80px;
-    height: 80px;
-    background-color: red;
-    position: absolute;
-    bottom: 15px;
-    right: 40px;
-    border-radius: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: right;
-
+#checkpoint2 {
+    top: 150px;
+    right: 50px;
 }
 
-#startInnerDot,
-#checkpoint1Inner,
-#checkpointAInner,
-#targetInnerDot {
+#checkpointB {
+    bottom: 50px;
+    left: 200px;
+}
+
+.checkpointInner {
     width: 25px;
     height: 25px;
     background-color: white;
