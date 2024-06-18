@@ -81,9 +81,11 @@ document.addEventListener("touchstart", e => {
     touchStartY = touch.pageY;
     // Advance Phase if starting on startpoint
     if (document.elementsFromPoint(touchStartX, touchStartY).includes(checkpoints[0])) {
-	phase = 1;
-	checkpoints[1].style.display = "flex";
-	checkpoints[2].style.display = "flex";
+	randomizePosition();
+	checkpoints[phase + 1].style.display = "flex";
+	phase = 1
+	randomizePosition();
+	checkpoints[phase + 1].style.display = "flex";
     }
 
     startTime = Date.now();
@@ -107,6 +109,20 @@ document.addEventListener("touchstart", e => {
     numCoords = numCoords + 1;
     //}
 });
+
+// randomizes the position of checkpoints[phase + 1]
+function randomizePosition() {
+	let prev = phase == 0 ? new DOMRect(9999, 9999, 1, 1) : checkpoints[phase - 1].getBoundingClientRect();
+	let curr = checkpoints[phase].getBoundingClientRect();
+	let randomX;
+	let randomY;
+	do {
+		randomX = Math.random() * (screen.width - 100) + 10;
+		randomY = Math.random() * (screen.height - 100) + 10;
+	} while (calculateDistance(randomX, prev.x, randomY, prev.y) < 90 || calculateDistance(randomX, curr.x, randomY, curr.y) < 90)
+	checkpoints[phase + 1].style.left = `${randomX}px`;
+	checkpoints[phase + 1].style.top = `${randomY}px`;
+}
 
 function enterSubMovement() {
     let subTimeDiff = coords[numCoords][2] - subMovements[numSubMovements - 1][2];
@@ -207,6 +223,7 @@ document.addEventListener("touchmove", e => {
 	phase++;
 	checkpoints[phase - 2].style.display = 'none';
 	if (!(phase + 1 >= checkpoints.length)) {
+	    randomizePosition(checkpoints[phase + 1]);
 	    checkpoints[phase + 1].style.display = 'flex';
 	} 
 	
@@ -307,17 +324,17 @@ document.addEventListener("touchend", e => {
 
     //This captures the rectangular area defined by the start and end points of a touch gesture on the screen. 
     let tapAreaSize = Math.abs(touchStartX - touchEndX) * Math.abs(touchStartY - touchEndY);
-
+/*
     let startRect = startPointInner.getBoundingClientRect();
-    //let targetRect = targetPoint.getBoundingClientRect();
+    let targetRect = targetPoint.getBoundingClientRect();
 
     let startX = startRect.left + startRect.width / 2;
     let startY = startRect.top + startRect.height / 2;
 
-    //let targetX = targetRect.left + targetRect.width / 2;
-    //let targetY = targetRect.top + targetRect.height / 2;
-    //let shortestPathDistance = calculateDistance(startX, targetX, startY, targetY); // The shortest path to follow from start to target
-
+    let targetX = targetRect.left + targetRect.width / 2;
+    let targetY = targetRect.top + targetRect.height / 2;
+    let shortestPathDistance = calculateDistance(startX, targetX, startY, targetY); // The shortest path to follow from start to target
+*/
     // || document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot
     /*
     if (document.elementFromPoint(touch.clientX, touch.clientY) === targetInnerDot) {
