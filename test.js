@@ -103,7 +103,7 @@ document.addEventListener("touchstart", e => {
     subMovements[numSubMovements] = [initialX, initialY, previousTime, 0, 0];
     numSubMovements = numSubMovements + 1;
     coords[numCoords] = [initialX, initialY, previousTime];
-    createSubDot();
+    //createSubDot();
     numCoords = numCoords + 1;
     //}
 });
@@ -137,56 +137,56 @@ function isSubMovement() {
 
         if (x0 < x1 && x1 < x2) {
             if (y0 == y1 && y1 == y2) {
-                createTrail();
+                //createTrail();
             }
             else if (y0 < y1 && y1 < y2) {
-                createTrail();
+                //createTrail();
             }
             else if (y0 > y1 && y1 > y2) {
-                createTrail();
+                //createTrail();
             }
             else {
 
                 enterSubMovement();
-                createSubDot();
+                //createSubDot();
             }
         }
 
         else if (x0 > x1 && x1 > x2) {
             if (y0 == y1 && y1 == y2) {
-                createTrail();
+                //createTrail();
             }
             else if (y0 < y1 && y1 < y2) {
-                createTrail();
+                //createTrail();
             }
             else if (y0 > y1 && y1 > y2) {
-                createTrail();
+                //createTrail();
             }
             else {
                 enterSubMovement();
-                createSubDot();
+                //createSubDot();
             }
         }
 
         else if (x0 == x1 && x1 == x2) {
             if (y0 == y1 && y1 == y2) {
-                createTrail();
+                //createTrail();
             }
             else if (y0 < y1 && y1 < y2) {
-                createTrail();
+                //createTrail();
             }
             else if (y0 > y1 && y1 > y2) {
-                createTrail();
+                //createTrail();
             }
             else {
                 enterSubMovement();
-                createSubDot();
+                //createSubDot();
             }
         }
 
         else {
             enterSubMovement();
-            createSubDot();
+            //createSubDot();
         }
     }
 }
