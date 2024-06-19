@@ -117,8 +117,8 @@ function randomizePosition() {
 	let randomX;
 	let randomY;
 	do {
-		randomX = Math.random() * (screen.width - 100) + 10;
-		randomY = Math.random() * (screen.height - 100) + 10;
+		randomX = Math.random() * (window.innerWidth - 100) + 10;
+		randomY = Math.random() * (window.innerHeight - 100) + 10;
 	} while (calculateDistance(randomX, prev.x, randomY, prev.y) < 90 || calculateDistance(randomX, curr.x, randomY, curr.y) < 90)
 	checkpoints[phase + 1].style.left = `${randomX}px`;
 	checkpoints[phase + 1].style.top = `${randomY}px`;
