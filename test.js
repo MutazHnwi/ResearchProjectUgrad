@@ -346,7 +346,9 @@ document.addEventListener("touchend", e => {
     })
 
     results = `Number of Submovements: ${numSubMovements}
-    Number of movements: ${numCoords}`;
+    Number of movements: ${numCoords}
+    screen.width: ${screen.width}
+    screen.height: ${screen.height}`;
 
     if (modal.style.display != 'block') {
 	modalContent.innerText = results;
