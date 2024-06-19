@@ -220,10 +220,12 @@ document.addEventListener("touchmove", e => {
     let currentElements = document.elementsFromPoint(currentX, currentY);
 
     if (currentElements.includes(checkpoints[phase])) {
-	randomizePosition();
+	if (phase + 1 < checkpoints.length) {
+	    randomizePosition();
+	}
 	phase++;
 	checkpoints[phase - 2].style.display = 'none';
-	if (!(phase + 1 >= checkpoints.length)) {
+	if (phase + 1 < checkpoints.length) {
 	    randomizePosition();
 	    checkpoints[phase + 1].style.display = 'flex';
 	} 
