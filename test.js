@@ -81,11 +81,8 @@ document.addEventListener("touchstart", e => {
     touchStartY = touch.pageY;
     // Advance Phase if starting on startpoint
     if (document.elementsFromPoint(touchStartX, touchStartY).includes(checkpoints[0])) {
-	randomizePosition();
-	checkpoints[phase + 1].style.display = "flex";
-	phase = 1
-	randomizePosition();
-	checkpoints[phase + 1].style.display = "flex";
+	phase++;
+	placeNewPoints();
     }
 
     startTime = Date.now();
@@ -109,20 +106,6 @@ document.addEventListener("touchstart", e => {
     numCoords = numCoords + 1;
     //}
 });
-
-// randomizes the position of checkpoints[phase + 1]
-function randomizePosition() {
-	let prev = phase == 0 ? new DOMRect(9999, 9999, 1, 1) : checkpoints[phase - 1].getBoundingClientRect();
-	let curr = checkpoints[phase].getBoundingClientRect();
-	let randomX;
-	let randomY;
-	do {
-		randomX = Math.random() * (window.innerWidth - 100) + 10;
-		randomY = Math.random() * (window.innerHeight - 100) + 10;
-	} while (calculateDistance(randomX, prev.x, randomY, prev.y) < 90 || calculateDistance(randomX, curr.x, randomY, curr.y) < 90)
-	checkpoints[phase + 1].style.left = `${randomX}px`;
-	checkpoints[phase + 1].style.top = `${randomY}px`;
-}
 
 function enterSubMovement() {
     let subTimeDiff = coords[numCoords][2] - subMovements[numSubMovements - 1][2];
@@ -207,6 +190,93 @@ function isSubMovement() {
     }
 }
 
+function placeNewPoints() {
+	// randomize checkpoints[phase] and checkpoints[phase + 1]
+	/* Pseudocode
+	 *
+	 * Find the closest edge of the screen (left, right, top, bottom) to checkpoints[phase - 1]
+	 * Generate an angle (-45-45 degrees offset the angle opposite the closest edge) to place the center between the two
+	 * Generate an angle offset (0-45 degrees)
+	 * Generate a random distance (90px (10px buffer) to max(window.innerWidth, window.innerHeight) 
+	 */
+	
+	// Find the closest edge
+	let currentPoint = checkpoints[phase - 1].getBoundingClientRect();
+	let angle;
+	let distFromEdge;
+	if (
+		currentPoint.x + 40 <= window.innerWidth - currentPoint.x - 40 && // dist from left < dist from right
+		currentPoint.x + 40 <= currentPoint.y + 40 && // dist from left < dist from top
+		currentPoint.x + 40 <= window.innerHeight - currentPoint.y - 40 // dist from left < dist from bottom
+	) { // left
+		angle = 0; // 0 degrees points right
+		distFromEdge = currentPoint.x;
+	} else if (
+		window.innerWidth - currentPoint.x - 40 <= currentPoint.x + 40 && // dist from right < dist from left
+		window.innerWidth - currentPoint.x - 40 <= currentPoint.y + 40 && // dist from right < dist from top
+		window.innerWidth - currentPoint.x - 40 <= window.innerHeight - currentPoint.y - 40 // dist from right < dist from bottom
+	) { // right
+		angle = 180; // 180 degrees points left
+		distFromEdge = window.innerWidth - currentPoint.x - 80;
+	} else if (
+		currentPoint.y + 40 <= window.innerHeight - currentPoint.y - 40 && // dist from top < dist from bottom
+		currentPoint.y + 40 <= currentPoint.x + 40 && // dist from top < dist from left
+		currentPoint.y + 40 <= window.innerWidth - currentPoint.x - 40 // dist from top < dist from right
+	) { // top
+		angle = 270; // 90 points up
+		distFromEdge = currentPoint.y;
+	} else if (
+		window.innerHeight - currentPoint.y - 40 <= currentPoint.y + 40 && // dist from bottom < dist from top
+		window.innerHeight - currentPoint.y - 40 <= currentPoint.x + 40 && // dist from bottom < dist from left
+		window.innerHeight - currentPoint.y - 40 <= window.innerWidth - currentPoint.x - 40 // dist from bottom < dist from right
+	) { // bottom
+		angle = 90; // 270 points down
+		distFromEdge = window.innerHeight - currentPoint.y - 80;
+	} else {
+		throw new Error("angle determining error in placeNewPoints");
+	}
+	angle += Math.random() * 90 - 45;
+	let angleOffset = Math.random() * 45;
+	let distA;
+	let RectA = new DOMRect(0, 0, 80, 80);
+	let distB;
+	let RectB = new DOMRect(0, 0, 80, 80);
+	while (RectA.x < 10 || RectA.x + 90 > window.innerWidth || RectA.y < 10 || RectA.y + 90 > window.innerHeight) { // while RectA is out of bounds
+		distA = Math.random() * (Math.max(window.innerWidth, window.innerHeight) - 90 - distFromEdge) + 90
+		RectA.x = Math.cos(angle + angleOffset) * distA + currentPoint.x;
+		RectA.y = Math.sin(angle + angleOffset) * distA + currentPoint.y;
+	}
+	while ( // while RectB is out of bounds or too close to RectA
+		RectB.x < 10 || // too close to left
+		RectB.x + 90 > window.innerWidth || // too close to right
+		RectB.y < 10 || // too close to top
+		RectB.y + 90 > window.innerHeight || // too close to bottom
+		(
+		!(RectB.x > RectA.x + 90 || RectB.x < RectA.x - 10) && // too close to A by X
+		!(RectB.y > RectA.y + 90 || RectB.y < RectA.y - 10) // too close to A by Y
+		)
+	) {
+		distB = Math.random() * (Math.max(window.innerWidth, window.innerHeight) - 90 - distFromEdge) + 90
+		RectB.x = Math.cos(angle - angleOffset) * distB + currentPoint.x;
+		RectB.y = Math.sin(angle - angleOffset) * distB + currentPoint.y;
+	}
+	if (Math.random() > 0.5) { // Coin flip whether A or B is next
+		checkpoints[phase].style.left = `${RectA.x}px`;
+		checkpoints[phase].style.top = `${RectA.y}px`;
+		checkpoints[phase].style.display = 'flex';
+		checkpoints[phase + 1].style.left = `${RectB.x}px`;
+		checkpoints[phase + 1].style.top = `${RectB.y}px`;
+		checkpoints[phase + 1].style.display = 'flex';
+	} else {
+		checkpoints[phase].style.left = `${RectB.x}px`;
+		checkpoints[phase].style.top = `${RectB.y}px`;
+		checkpoints[phase].style.display = 'flex';
+		checkpoints[phase + 1].style.left = `${RectA.x}px`;
+		checkpoints[phase + 1].style.top = `${RectA.y}px`;
+		checkpoints[phase + 1].style.display = 'flex';
+	}
+}
+
 //Finger is moving on the screen
 document.addEventListener("touchmove", e => {
     e.preventDefault();
@@ -220,16 +290,8 @@ document.addEventListener("touchmove", e => {
     let currentElements = document.elementsFromPoint(currentX, currentY);
 
     if (currentElements.includes(checkpoints[phase])) {
-	if (phase + 1 < checkpoints.length) {
-	    randomizePosition();
-	}
 	phase++;
-	checkpoints[phase - 2].style.display = 'none';
-	if (phase + 1 < checkpoints.length) {
-	    randomizePosition();
-	    checkpoints[phase + 1].style.display = 'flex';
-	} 
-	
+	placeNewPoints();
     } else if (currentElements.includes(checkpoints[phase + 1])) {
 	modalContent.innerText = `Incorrect, phase = ${phase}`;
 	modal.style.display = 'block';
