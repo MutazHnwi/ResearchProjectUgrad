@@ -297,7 +297,7 @@ document.addEventListener("touchend", e => {
     numSubMovements = numSubMovements + 1;
     coords[numCoords] = [touchEndX, touchEndY, currentTime];
     end = 1;
-    createSubDot();
+    //createSubDot();
     numCoords = numCoords + 1;
     console.log("end");
 
