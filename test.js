@@ -209,42 +209,42 @@ function placeNewPoints() {
 		currentPoint.x + 40 <= currentPoint.y + 40 && // dist from left < dist from top
 		currentPoint.x + 40 <= window.innerHeight - currentPoint.y - 40 // dist from left < dist from bottom
 	) { // left
-		angle = 0; // 0 degrees points right
+		angle = 0; // 0 radians points right
 		distFromEdge = currentPoint.x;
 	} else if (
 		window.innerWidth - currentPoint.x - 40 <= currentPoint.x + 40 && // dist from right < dist from left
 		window.innerWidth - currentPoint.x - 40 <= currentPoint.y + 40 && // dist from right < dist from top
 		window.innerWidth - currentPoint.x - 40 <= window.innerHeight - currentPoint.y - 40 // dist from right < dist from bottom
 	) { // right
-		angle = 180; // 180 degrees points left
+		angle = Math.PI; // pi radians points left
 		distFromEdge = window.innerWidth - currentPoint.x - 80;
 	} else if (
 		currentPoint.y + 40 <= window.innerHeight - currentPoint.y - 40 && // dist from top < dist from bottom
 		currentPoint.y + 40 <= currentPoint.x + 40 && // dist from top < dist from left
 		currentPoint.y + 40 <= window.innerWidth - currentPoint.x - 40 // dist from top < dist from right
 	) { // top
-		angle = 270; // 90 points up
+		angle = Math.PI * (3/2); // 3pi/2 radians points down
 		distFromEdge = currentPoint.y;
 	} else if (
 		window.innerHeight - currentPoint.y - 40 <= currentPoint.y + 40 && // dist from bottom < dist from top
 		window.innerHeight - currentPoint.y - 40 <= currentPoint.x + 40 && // dist from bottom < dist from left
 		window.innerHeight - currentPoint.y - 40 <= window.innerWidth - currentPoint.x - 40 // dist from bottom < dist from right
 	) { // bottom
-		angle = 90; // 270 points down
+		angle = Math.PI * (1/2); // pi/2 radians points down
 		distFromEdge = window.innerHeight - currentPoint.y - 80;
 	} else {
 		throw new Error("angle determining error in placeNewPoints");
 	}
-	angle += Math.random() * 90 - 45;
-	let angleOffset = Math.random() * 45;
+	angle += Math.random() * Math.PI/2 - Math.PI/4;
+	let angleOffset = Math.random() * Math.PI/6 + Math.PI/12;
 	let distA;
 	let RectA = new DOMRect(0, 0, 80, 80);
 	let distB;
 	let RectB = new DOMRect(0, 0, 80, 80);
 	while (RectA.x < 10 || RectA.x + 90 > window.innerWidth || RectA.y < 10 || RectA.y + 90 > window.innerHeight) { // while RectA is out of bounds
-		distA = Math.random() * (Math.max(window.innerWidth, window.innerHeight) - 90 - distFromEdge) + 90
+		distA = Math.random() * (Math.max(window.innerWidth, window.innerHeight) - 90 - distFromEdge) + 90;
 		RectA.x = Math.cos(angle + angleOffset) * distA + currentPoint.x;
-		RectA.y = Math.sin(angle + angleOffset) * distA + currentPoint.y;
+		RectA.y = currentPoint.y - Math.sin(angle + angleOffset) * distA; // y value is 0 at top and window.innerHeight at bottom, so going up means subtracting from y
 	}
 	while ( // while RectB is out of bounds or too close to RectA
 		RectB.x < 10 || // too close to left
@@ -252,13 +252,16 @@ function placeNewPoints() {
 		RectB.y < 10 || // too close to top
 		RectB.y + 90 > window.innerHeight || // too close to bottom
 		(
-		!(RectB.x > RectA.x + 90 || RectB.x < RectA.x - 10) && // too close to A by X
-		!(RectB.y > RectA.y + 90 || RectB.y < RectA.y - 10) // too close to A by Y
+		!(RectB.x > RectA.x + 90 || RectB.x < RectA.x - 10) && // too close to RectA by X
+		!(RectB.y > RectA.y + 90 || RectB.y < RectA.y - 10) // too close to RectA by Y
+		) || (
+		!(RectB.x > currentPoint.x + 90 || RectB.x < currentPoint.x - 10) && // too close to currentPoint by X
+		!(RectB.y > currentPoint.y + 90 || RectB.y < currentPoint.y - 10) // too close to currentPoint by Y
 		)
 	) {
-		distB = Math.random() * (Math.max(window.innerWidth, window.innerHeight) - 90 - distFromEdge) + 90
+		distB = Math.random() * (Math.max(window.innerWidth, window.innerHeight) - 90 - distFromEdge) + 90;
 		RectB.x = Math.cos(angle - angleOffset) * distB + currentPoint.x;
-		RectB.y = Math.sin(angle - angleOffset) * distB + currentPoint.y;
+		RectB.y = currentPoint.y - Math.sin(angle - angleOffset) * distB;
 	}
 	if (Math.random() > 0.5) { // Coin flip whether A or B is next
 		checkpoints[phase].style.left = `${RectA.x}px`;
@@ -292,6 +295,7 @@ document.addEventListener("touchmove", e => {
     if (currentElements.includes(checkpoints[phase])) {
 	phase++;
 	placeNewPoints();
+	checkpoints[phase - 2].style.display = 'none';
     } else if (currentElements.includes(checkpoints[phase + 1])) {
 	modalContent.innerText = `Incorrect, phase = ${phase}`;
 	modal.style.display = 'block';
