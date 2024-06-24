@@ -201,33 +201,65 @@ function placeNewPoints() {
 	let rectA = new DOMRect(0, 0, 80, 80);
 	let rectB = new DOMRect(0, 0, 80, 80);
 	
-	if (phase == 1) { // startpoint
-		rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100);
-		rectB.x = window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectB.y = 10 + Math.random() * (window.innerHeight / 2 - 100);
-	} else if (currentRect.x < window.innerWidth / 2 && currentRect.y < window.innerHeight / 2) { // top left quadrant
-		rectA.x = window.innerWidth / 2 + Math.random() * (window.innerWidth / 2 - 100);
-		rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100);
-		rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectB.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100);
-	} else if (currentRect.x > window.innerWidth / 2 && currentRect.y < window.innerHeight / 2) { // top right
-		rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100);
-		rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectB.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100);
-	} else if (currentRect.x < window.innerWidth / 2 && currentRect.y > window.innerHeight / 2) { // bottom left
-		rectA.x = window.innerWidth / 2 + Math.random() * (window.innerWidth / 2 - 100);
-		rectA.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100);
-		rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectB.y = 10 + Math.random() * (window.innerHeight / 2 - 100);
-	} else if (currentRect.x > window.innerWidth / 2 && currentRect.y > window.innerHeight / 2) { // bottom right
-		rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectA.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100);
-		rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100);
-		rectB.y = 10 + Math.random() * (window.innerHeight / 2 - 100);
-	} else { // something went wrong
-		throw new Error('cannot find current point');
+	if (window.innerWidth > window.innerHeight) {
+		if (phase == 1) { // startpoint
+			rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+			rectB.x = window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectB.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+		} else if (currentRect.x < window.innerWidth / 2 && currentRect.y < window.innerHeight / 2) { // top left quadrant
+			rectA.x = window.innerWidth / 2 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+			rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // left or right
+			rectB.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // bottom
+		} else if (currentRect.x > window.innerWidth / 2 && currentRect.y < window.innerHeight / 2) { // top right
+			rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+			rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // left or right
+			rectB.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // bottom
+		} else if (currentRect.x < window.innerWidth / 2 && currentRect.y > window.innerHeight / 2) { // bottom left
+			rectA.x = window.innerWidth / 2 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectA.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // bottom
+			rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // left or right
+			rectB.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+		} else if (currentRect.x > window.innerWidth / 2 && currentRect.y > window.innerHeight / 2) { // bottom right
+			rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectA.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // bottom
+			rectB.x = Math.random() > 1/2 ? 10 + Math.random() * (window.innerWidth / 2 - 100) : window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // left or right
+			rectB.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+		} else { // something went wrong
+			throw new Error('cannot find current point');
+		}
+	} else {
+		if (phase == 1) { // startpoint
+			rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+			rectB.x = window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectB.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+		} else if (currentRect.x < window.innerWidth / 2 && currentRect.y < window.innerHeight / 2) { // top left quadrant
+			rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectA.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // bottom
+			rectB.x = window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectB.y = Math.random() > 1/2 ? 10 + Math.random() * (window.innerHeight / 2 - 100) : window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // top or bottom
+		} else if (currentRect.x > window.innerWidth / 2 && currentRect.y < window.innerHeight / 2) { // top right
+			rectA.x = window.innerWidth / 2 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectA.y = window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // bottom
+			rectB.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectB.y = Math.random() > 1/2 ? 10 + Math.random() * (window.innerHeight / 2 - 100) : window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // top or bottom
+		} else if (currentRect.x < window.innerWidth / 2 && currentRect.y > window.innerHeight / 2) { // bottom left
+			rectA.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+			rectB.x = window.innerWidth / 2 + 10 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectB.y = Math.random() > 1/2 ? 10 + Math.random() * (window.innerHeight / 2 - 100) : window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // top or bottom
+		} else if (currentRect.x > window.innerWidth / 2 && currentRect.y > window.innerHeight / 2) { // bottom right
+			rectA.x = window.innerWidth / 2 + Math.random() * (window.innerWidth / 2 - 100); // right
+			rectA.y = 10 + Math.random() * (window.innerHeight / 2 - 100); // top
+			rectB.x = 10 + Math.random() * (window.innerWidth / 2 - 100); // left
+			rectB.y = Math.random() > 1/2 ? 10 + Math.random() * (window.innerHeight / 2 - 100) : window.innerHeight / 2 + 10 + Math.random() * (window.innerHeight / 2 - 100); // top or bottom
+		} else { // something went wrong
+			throw new Error('cannot find current point');
+		}
+
 	}
 	
 
