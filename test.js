@@ -464,4 +464,5 @@ function getShortestPathDistance() {
 }
 function closeModal() {
     modal.style.display = 'none';
+    window.location.reload();
 }
