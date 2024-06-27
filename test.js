@@ -23,7 +23,6 @@ let reachedTarget = false;
 let totalDistanceTraveled = 0;
 let end = 0;
 
-const startPoint = document.getElementById('startPoint');
 const checkpoint1 = document.getElementById('checkpoint1');
 const checkpointA = document.getElementById('checkpointA');
 const checkpoint2 = document.getElementById('checkpoint2');
@@ -32,8 +31,10 @@ const checkpoint3 = document.getElementById('checkpoint3');
 const checkpointC = document.getElementById('checkpointC');
 const checkpoint4 = document.getElementById('checkpoint4');
 const checkpointD = document.getElementById('checkpointD');
+const checkpoint5 = document.getElementById('checkpoint5');
+const checkpointE = document.getElementById('checkpointE');
 
-const checkpoints = [startPoint, checkpoint1, checkpointA, checkpoint2, checkpointB, checkpoint3, checkpointC, checkpoint4, checkpointD];
+const checkpoints = [checkpoint1, checkpointA, checkpoint2, checkpointB, checkpoint3, checkpointC, checkpoint4, checkpointD, checkpoint5, checkpointE];
 
 let phase = 0; // index of checkpoints representing the next point to go to
 
@@ -415,8 +416,6 @@ document.addEventListener("touchend", e => {
 
     results = `Number of Submovements: ${numSubMovements}
     Number of movements: ${numCoords}
-    screen.width: ${screen.width}
-    screen.height: ${screen.height}
     breakpoints: ${breakpoints}`;
 
     if (modal.style.display != 'block') {

@@ -51,51 +51,10 @@ body {
     justify-content: right;
 }
 
-#startPoint {
+#checkpoint1 {
     bottom: 50px;
     left: calc(50% - 40px);
-    background-color: green;
     display: flex;
-}
-
-#checkpoint1 {
-    top: 50px;
-    right: 50px;
-}
-
-#checkpointA {
-    bottom: 50px;
-    left: 50px;
-}
-
-#checkpoint2 {
-    top: 150px;
-    right: 50px;
-}
-
-#checkpointB {
-    bottom: 50px;
-    left: 200px;
-}
-
-#checkpoint3 {
-    top: 50px;
-    left: 100px;
-}
-
-#checkpointC {
-    bottom: 50px;
-    right: 100px;
-}
-
-#checkpoint4 {
-    top: 50px;
-    left: 400px;
-}
-
-#checkpointD {
-    bottom: 50px;
-    left: 100px;
 }
 
 .label {
