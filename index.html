@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="style.css" rel="stylesheet" />
   <title>Touch Events Example</title>
-  <script src="test.js" defer> </script>
+  <script src="index.js" defer> </script>
 </head>
 
 <body>
@@ -24,7 +24,15 @@
     <span class="label">2</span>
   </div>
 
+  <div class="checkpointFake" id="checkpoint2Fake">
+    <span class="label">2</span>
+  </div>
+
   <div class="checkpoint" id="checkpointB">
+    <span class="label">B</span>
+  </div>
+
+  <div class="checkpointFake" id="checkpointBFake">
     <span class="label">B</span>
   </div>
 
@@ -32,7 +40,15 @@
     <span class="label">3</span>
   </div>
 
+  <div class="checkpointFake" id="checkpoint3Fake">
+    <span class="label">3</span>
+  </div>
+
   <div class="checkpoint" id="checkpointC">
+    <span class="label">C</span>
+  </div>
+
+  <div class="checkpointFake" id="checkpointCFake">
     <span class="label">C</span>
   </div>
 
@@ -40,7 +56,15 @@
     <span class="label">4</span>
   </div>
 
+  <div class="checkpointFake" id="checkpoint4Fake">
+    <span class="label">4</span>
+  </div>
+
   <div class="checkpoint" id="checkpointD">
+    <span class="label">D</span>
+  </div>
+
+  <div class="checkpointFake" id="checkpointDFake">
     <span class="label">D</span>
   </div>
 
@@ -48,7 +72,15 @@
     <span class="label">5</span>
   </div>
 
+  <div class="checkpointFake" id="checkpoint5Fake">
+    <span class="label">5</span>
+  </div>
+
   <div class="checkpoint" id="checkpointE">
+    <span class="label">E</span>
+  </div>
+
+  <div class="checkpointFake" id="checkpointEFake">
     <span class="label">E</span>
   </div>
 
@@ -59,6 +91,9 @@
         <span class="modal-close" onclick="closeModal()">&times;</span>
       </div>
       <div class="modal-body" id="modalBodyContent">
+		  <span class="modal-download" onclick="exportCoords()">Download Coords</span>
+		  <br>
+		  <span class="modal-download" onclick="exportPoints()">Download Points</span>
       </div>
       <div class="modal-footer">
         <button onclick="closeModal()">Close</button>
