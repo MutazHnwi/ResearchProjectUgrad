@@ -84,19 +84,34 @@
     <span class="label">E</span>
   </div>
 
+  <div id="errorModal" class="modal">
+	  <div class="modal-content">
+		  <div class="modal-header">
+			  <span class="modal-title">Incorrect Point</span>
+			  <span class="modal-close" onclick="closeErrorModal()">&times;</span>
+		  </div>
+		  <div class="modal-body" id="errorModalBodyContent">
+			  <span class="modal-download">Incorrect Point, go back to the last point and try again</span>
+		  </div>
+		  <div class="modal-footer">
+			  <button onclick="closeErrorModal()">Close</button>
+		  </div>
+	  </div>
+  </div>
+
   <div id="resultsModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <span class="modal-title">Drag Results</span>
-        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <span class="modal-close" onclick="closeResultsModal()">&times;</span>
       </div>
-      <div class="modal-body" id="modalBodyContent">
+      <div class="modal-body" id="resultsModalBodyContent">
 		  <a class="modal-download" onclick="exportCoords()">Download Coords</a>
 		  <br>
 		  <a class="modal-download" onclick="exportPoints()">Download Points</a>
       </div>
       <div class="modal-footer">
-        <button onclick="closeModal()">Close</button>
+        <button onclick="closeResultsModal()">Close</button>
       </div>
     </div>
   </div>

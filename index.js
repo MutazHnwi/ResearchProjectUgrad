@@ -15,9 +15,9 @@ const checkpointPairs = [
 	[document.getElementById('checkpoint5'), document.getElementById('checkpointEFake')]
 ];
 let phase = -1; // represents which checkpoint is next: -1 = 1, 0 = A, 1 = 2, 2 = B, etc to work nicely with the checkpointPairs array
-
+let error = false; // if in error state
 // this is an array of arrays of coordinates.
-const coords = [["X Coordinate", "Y Coordinate", "Time from first Touch"]];
+const coords = [["X Coordinate", "Y Coordinate", "Time from first Touch", "three -1s means the user lifted their finger", "three -2s means the user went to the wrong point on the NEXT coordinate"]];
 
 function placePoints(pair) {
 	let currentRect
@@ -155,23 +155,25 @@ document.addEventListener("touchstart", e => {
     const touch = e.changedTouches[0];
 	coords.push([touch.screenX, touch.screenY, Date.now() - startTime]);
 
-	// Advance phase if starting on startpoint
-	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointStart) && phase == -1) {
+	// Advance phase if starting on startpoint or previous with in error state
+	if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointStart) && phase == -1) {
 		phase++;
 		checkpointPairs[phase][0].style.display = 'flex';
 		checkpointPairs[phase][1].style.display = 'flex';
-	} else {
-		// TODO: show error message
+	} else if (error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase > -1 ? checkpointPairs[phase][0] : checkpointStart)) {
+		phase++;
+		error = false;
+		checkpointPairs[phase][0].style.display = 'flex';
+		checkpointPairs[phase][1].style.display = 'flex';
 	}
 });
 
 document.addEventListener("touchmove", e => {
 	// add point to coords
 	const touch = e.changedTouches[0];
-	coords.push([touch.screenX, touch.screenY, Date.now() - startTime]);
 
 	// Advance phase if on correct point, show error message if not
-	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][0] : checkpointFinal)) {
+	if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][0] : checkpointFinal)) {
 		phase++;
 		checkpointStart.style.display = 'none';
 		if (phase < checkpointPairs.length) {
@@ -179,18 +181,22 @@ document.addEventListener("touchmove", e => {
 			checkpointPairs[phase][1].style.display = 'flex';
 		} else if (phase == checkpointPairs.length) {
 			checkpointFinal.style.display = 'flex'
-        } else {
-
-		}
+        }
 		if (phase > 0 && phase - 1 < checkpointPairs.length) {
 			checkpointPairs[phase - 1][1].style.display = 'none';
 		}
 		if (phase > 1 && phase - 2 < checkpointPairs.length) {
 			checkpointPairs[phase - 2][0].style.display = 'none';
 		}
-	} else if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][1] : null)) {
-		// TODO: error thing
+	} else if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][1] : null)) {
+		document.getElementById("errorModal").style.display = 'block';
+		checkpointPairs[phase][0].style.display = 'none';
+		checkpointPairs[phase][1].style.display = 'none';
+		phase--;
+		error = true;
+		coords.push([-2, -2, -2]);
 	}
+	coords.push([touch.screenX, touch.screenY, Date.now() - startTime]);
 });
 
 document.addEventListener("touchend", e => {
@@ -271,7 +277,11 @@ function exportToCsv(filename, rows) {
     }
 }
 
-function closeModal() {
+function closeErrorModal() {
+	document.getElementById("errorModal").style.display = 'none';
+}
+
+function closeResultsModal() {
     document.getElementById("resultsModal").style.display = 'none';
     window.location.reload();
 }
