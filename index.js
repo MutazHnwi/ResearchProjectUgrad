@@ -16,18 +16,8 @@ const checkpointPairs = [
 ];
 let phase = -1; // represents which checkpoint is next: -1 = 1, 0 = A, 1 = 2, 2 = B, etc to work nicely with the checkpointPairs array
 
-// 
-class point {
-	constructor(x, y, t) {
-		this.x = x;
-		this.y = y;
-		this.t = t;
-	}
-}
-
-// this is an array of arrays of points. I wanted to use the inbuilt TouchList and Touch objects, but I don't want the pain of figuring out how to add a timestamp to each touch
-const coords = [];
-let touchNumber = -1;
+// this is an array of arrays of coordinates.
+const coords = [["X Coordinate", "Y Coordinate", "Time from first Touch"]];
 
 function placePoints(pair) {
 	let currentRect
@@ -102,6 +92,7 @@ function placePoints(pair) {
 		}
 		
 	// debugging
+	/*
 	console.log(
 		pair + " distA " + 
 		//Math.atan2(currentRect.y - rectA.y, currentRect.x - rectA.x) * 180/Math.PI + " angleB " +
@@ -111,6 +102,7 @@ function placePoints(pair) {
 		(Math.sqrt(Math.pow(currentRect.x - rectB.x, 2) + Math.pow(currentRect.y - rectB.y, 2))) + " distAB " +
 		(Math.sqrt(Math.pow(rectA.x - rectB.x, 2) + Math.pow(rectA.y - rectB.y, 2)))
 	);
+	*/
 	
 	} while (
 		Math.abs(Math.atan2(currentRect.y - rectB.y, currentRect.x - rectB.x) * 180/Math.PI - Math.atan2(currentRect.y - rectA.y, currentRect.x - rectA.x) * 180/Math.PI) < 15
@@ -155,18 +147,16 @@ for (let pair in [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
 
 // At the touch start
 document.addEventListener("touchstart", e => {
-	touchNumber++;
-	coords.push([]);
-	if (touchNumber == 0) {
+	if (coords.length == 1) {
 		startTime = Date.now(); // if first touch, set startTime
 	}
 
 	// add point to coords
     const touch = e.changedTouches[0];
-	coords[touchNumber].push(new point(touch.pageX, touch.pageY, Date.now() - startTime));
+	coords.push([touch.screenX, touch.screenY, Date.now() - startTime]);
 
 	// Advance phase if starting on startpoint
-	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointStart)) {
+	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointStart) && phase == -1) {
 		phase++;
 		checkpointPairs[phase][0].style.display = 'flex';
 		checkpointPairs[phase][1].style.display = 'flex';
@@ -178,7 +168,7 @@ document.addEventListener("touchstart", e => {
 document.addEventListener("touchmove", e => {
 	// add point to coords
 	const touch = e.changedTouches[0];
-	coords[touchNumber].push(new point(touch.pageX, touch.pageY, Date.now() - startTime));
+	coords.push([touch.screenX, touch.screenY, Date.now() - startTime]);
 
 	// Advance phase if on correct point, show error message if not
 	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][0] : checkpointFinal)) {
@@ -190,7 +180,7 @@ document.addEventListener("touchmove", e => {
 		} else if (phase == checkpointPairs.length) {
 			checkpointFinal.style.display = 'flex'
         } else {
-			
+
 		}
 		if (phase > 0 && phase - 1 < checkpointPairs.length) {
 			checkpointPairs[phase - 1][1].style.display = 'none';
@@ -206,7 +196,7 @@ document.addEventListener("touchmove", e => {
 document.addEventListener("touchend", e => {
 	// add point to coords
 	const touch = e.changedTouches[0];
-	coords[touchNumber].push(new point(touch.pageX, touch.pageY, Date.now()));
+	coords.push([touch.pageX, touch.pageY, Date.now() - startTime], [-1, -1, -1]);
 
 	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) {
 		document.getElementById("resultsModal").style.display = 'block';
