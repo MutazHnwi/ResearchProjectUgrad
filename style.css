@@ -71,13 +71,13 @@ body {
 
 .label {
     font-family: Arial, sans-serif;
-    font-size: 16px;
-    color: black;
+    font-size: 24px;
+    color: white;
     position: absolute;
-    top: 5%;
-    left: 78%;
-    margin-left: 10px;
+    top: 28px;
+    left: 34px;
 	z-index: 5;
+	user-select: none;
 }
 
 /* Modal styles */
