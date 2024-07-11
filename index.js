@@ -206,11 +206,13 @@ document.addEventListener("touchend", e => {
 
 	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) {
 		document.getElementById("resultsModal").style.display = 'block';
+		exportCoords();
+		exportPoints();
 	}
 });
 
 function exportCoords() {
-	exportToCsv("coords.csv", coords);
+	exportToCsv("coordsDownload", "coords.csv", coords);
 }
 
 function exportPoints() {
@@ -233,10 +235,10 @@ function exportPoints() {
 	}
 	let endRect = checkpointFinal.getBoundingClientRect();
 	points.push([checkpointFinal.id, endRect.x, endRect.y]);
-	exportToCsv("points.csv", points);
+	exportToCsv("pointsDownload", "points.csv", points);
 }
 
-function exportToCsv(filename, rows) {
+function exportToCsv(id, filename, rows) {
 	var processRow = function (row) {
         var finalVal = '';
         for (var j = 0; j < row.length; j++) {
@@ -263,16 +265,12 @@ function exportToCsv(filename, rows) {
     if (navigator.msSaveBlob) { // IE 10+
         navigator.msSaveBlob(blob, filename);
     } else {
-        var link = document.createElement("a");
+        var link = document.getElementById(id);
         if (link.download !== undefined) { // feature detection
             // Browsers that support HTML5 download attribute
             var url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
             link.setAttribute("download", filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
     }
 }
