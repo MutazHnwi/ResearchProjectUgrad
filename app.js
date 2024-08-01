@@ -81,7 +81,7 @@ const server = http.createServer((req, res) => {
 					console.log(data);
 				}
 			});
-		} else if (req.method === 'GET' && pathname === '/style.css' {
+		} else if (req.method === 'GET' && pathname === '/style.css') {
 			fs.readFile('./styles/style.css', (err, data) => {
 				if (err) {
 					console.error(err.stack);
@@ -144,7 +144,7 @@ const server = http.createServer((req, res) => {
 			res.write('404 page not found');
 			res.end();
 		}
-	}
+	});
 });
 
 server.listen(port, hostname, () => {
