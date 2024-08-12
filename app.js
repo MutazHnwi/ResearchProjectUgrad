@@ -4,7 +4,7 @@ const url = require('node:url');
 const pg = require('pg');
 
 const hostname = 'localhost';
-const port = '8080';
+const port = process.env.PORT; //8080
 
 const pgClient = new pg.Client({
 	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1234@localhost:5432/cognition',
