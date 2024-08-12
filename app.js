@@ -3,11 +3,11 @@ const fs = require('node:fs');
 const url = require('node:url');
 const pg = require('pg');
 
-const hostname = 'localhost';
-const port = process.env.PORT; //8080
+const hostname = 'https://cognition-a0e89b43ca6a.herokuapp.com/';
+const port = process.env.PORT || 8080;
 
 const pgClient = new pg.Client({
-	connectionString: process.env.DATABASE_URL, // || 'postgresql://postgres:1234@localhost:5432/cognition',
+	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1234@localhost:5432/cognition',
 	ssl: process.env.DATABASE_URL ? true : false
 });
 
