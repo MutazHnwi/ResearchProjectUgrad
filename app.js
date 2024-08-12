@@ -8,7 +8,7 @@ const port = process.env.PORT || 8080;
 
 const pgClient = new pg.Client({
 	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1234@localhost:5432/cognition',
-	ssl: process.env.DATABASE_URL ? true : false
+	//ssl: process.env.DATABASE_URL ? true : false
 });
 
 pgClient.connect();
