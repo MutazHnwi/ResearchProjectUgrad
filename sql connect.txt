@@ -1,0 +1,4 @@
+psql --host=cd5gks8n4kb20g.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com --port=5432 --username=uc4trs5h37bn68 --password --dbname=d1eu3llgsa602
+
+
+CREATE TABLE test_results (    id SERIAL PRIMARY KEY,    patientid INTEGER NOT NULL,    coordx INTEGER,    coordy INTEGER,    coordt INTEGER,    realpointid TEXT,    realpointx DOUBLE PRECISION,    realpointy DOUBLE PRECISION,    fakepointid TEXT,    fakepointx DOUBLE PRECISION,    fakepointy DOUBLE PRECISION);

@@ -77,6 +77,7 @@ const server = http.createServer((req, res) => {
 				res.writeHead(500, { 'Content-Type': 'text/plain' });
 				res.end('500 Internal Server Error');
 			}
+			document.getElementById("resultsModal").style.display = 'block';
 		});
 	} else {
 		res.writeHead(404, { 'Content-Type': 'text/plain' });

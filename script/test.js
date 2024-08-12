@@ -198,7 +198,6 @@ document.addEventListener("touchend", e => {
 	console.log(currentTime());
 
 	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) { // if at final point, submit data
-		document.getElementById("resultsModal").style.display = 'block';
 		const data = { // create data object
 			patientid: 0,
 			coordx: [],
