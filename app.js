@@ -9,6 +9,10 @@ const port = process.env.PORT || 8080;
 const pgClient = new pg.Client({
 	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1234@localhost:5432/cognition',
 	//ssl: process.env.DATABASE_URL ? true : false
+	ssl: {
+		require: true, // This will help you. But you will see nwe error
+		rejectUnauthorized: false // This line will fix new error
+	}
 });
 
 pgClient.connect();
