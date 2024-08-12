@@ -232,6 +232,7 @@ document.addEventListener("touchend", e => {
 			},
 			body: JSON.stringify(data), // body is stringified json
 		});
+		document.getElementById("resultsModal").style.display = 'block';
 	}
 	else {
 		if (!error) {
