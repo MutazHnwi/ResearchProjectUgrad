@@ -3,15 +3,16 @@ const fs = require('node:fs');
 const url = require('node:url');
 const pg = require('pg');
 
-const hostname = 'https://cognition-a0e89b43ca6a.herokuapp.com/';
+const hostname = 'https://cognition-a0e89b43ca6a.herokuapp.com/' || 'localhost';
 const port = process.env.PORT || 8080;
 
 const pgClient = new pg.Client({
 	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1234@localhost:5432/cognition',
 	//ssl: process.env.DATABASE_URL ? true : false
+
 	ssl: {
-		require: true, // This will help you. But you will see nwe error
-		rejectUnauthorized: false // This line will fix new error
+		require: true,
+		rejectUnauthorized: false
 	}
 });
 
@@ -47,6 +48,8 @@ const server = http.createServer((req, res) => {
 			serveFile('./script/instructions.js', 'application/javascript');
 		} else if (pathname === '/test.js') {
 			serveFile('./script/test.js', 'application/javascript');
+		} else if (pathname === '/measures.js') {
+			serveFile('./script/measures.js', 'application/javascript');
 		} else {
 			res.writeHead(404, { 'Content-Type': 'text/plain' });
 			res.end('404 page not found');
@@ -65,8 +68,8 @@ const server = http.createServer((req, res) => {
 				// Insert data into the database
 				for (let i = 0; i < data.coordx.length; i++) {
 					await pgClient.query(
-						'INSERT INTO test_results (patientid, coordx, coordy, coordt, realpointid, realpointx, realpointy, fakepointid, fakepointx, fakepointy) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-						[data.patientid, data.coordx[i], data.coordy[i], data.coordt[i], data.realpointid[i], data.realpointx[i], data.realpointy[i], data.fakepointid[i], data.fakepointx[i], data.fakepointy[i]]
+						'INSERT INTO test_results (patientid, blockno, coordx, coordy, coordt, realpointid, realpointx, realpointy, fakepointid, fakepointx, fakepointy, speed, pausevalue, correctangle, wrongangle, err, errorcorrected) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)',
+						[data.patientid[i], data.blockno[i], data.coordx[i], data.coordy[i], data.coordt[i], data.realpointid[i], data.realpointx[i], data.realpointy[i], data.fakepointid[i], data.fakepointx[i], data.fakepointy[i], data.speed[i], data.pause[i], data.correctangle[i], data.wrongangle[i], data.error[i], data.errorcorrected[i]]
 					);
 				}
 

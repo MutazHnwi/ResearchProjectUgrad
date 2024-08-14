@@ -18,6 +18,7 @@ let phase = -1; // represents which checkpoint is next: -1 = 1, 0 = A, 1 = 2, 2 
 let error = false; // if in error state
 // this is an array of arrays of coordinates.
 const coords = [];
+let blockno = 1;
 
 function currentTime() {
 	return Date.now() - startTime;
@@ -188,18 +189,19 @@ document.addEventListener("touchmove", e => {
 			coords.push([touch.screenX, touch.screenY, currentTime(), checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]); // add point to coords
 		}
 	}
-	console.log(currentTime());
+	//console.log(currentTime());
 });
 
 document.addEventListener("touchend", e => {
 	// add point to coords
 	const touch = e.changedTouches[0];
 
-	console.log(currentTime());
+	//console.log(currentTime());
 
 	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) { // if at final point, submit data
-		const data = { // create data object
-			patientid: 0,
+		var data = { // create data object
+			patientid: [],
+			blockno: [],
 			coordx: [],
 			coordy: [],
 			coordt: [],
@@ -208,10 +210,18 @@ document.addEventListener("touchend", e => {
 			realpointy: [],
 			fakepointid: [],
 			fakepointx: [],
-			fakepointy: []
+			fakepointy: [],
+			speed: [],
+			pause: [],
+			correctangle: [],
+			wrongangle: [],
+			error: [],
+			errorcorrected: [],
 		};
-		console.log(data);
+		//console.log(data);
 		for (const coord of coords) { // add coords to data object
+			data.patientid.push(0);
+			data.blockno.push(blockno);
 			data.coordx.push(coord[0]);
 			data.coordy.push(coord[1]);
 			data.coordt.push(coord[2]);
@@ -223,7 +233,12 @@ document.addEventListener("touchend", e => {
 			data.fakepointy.push(coord[8]);
 		}
 
-		console.log(data); // TODO log data (debugging, remove later)
+		//console.log(coords);
+
+		data = calculate_measures(coords, data);
+
+
+		//console.log(data); // TODO log data (debugging, remove later)
 
 		fetch("/submitdata", { // send data to server
 			method: "POST",
