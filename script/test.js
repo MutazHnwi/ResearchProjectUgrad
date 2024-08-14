@@ -144,12 +144,28 @@ document.addEventListener("touchstart", e => {
 		checkpointPairs[phase][0].style.display = 'flex';
 		checkpointPairs[phase][1].style.display = 'flex';
 	} else if (error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase > -1 ? checkpointPairs[phase][0] : checkpointStart)) {
-		phase++;
+		console.log("hello");
+		if (phase < checkpointPairs.length - 1) {
+			phase++;
+			checkpointPairs[phase][0].style.display = 'flex';
+			checkpointPairs[phase][1].style.display = 'flex';
+		}
+		else {
+			checkpointPairs[phase][0].style.display = 'flex';
+			checkpointFinal.style.display = 'flex';
+		}
 		error = false;
-		checkpointPairs[phase][0].style.display = 'flex';
-		checkpointPairs[phase][1].style.display = 'flex';
+
+	}/*
+	else if (error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointPairs[phase - 1][0])) {
+		error = false;
+		checkpointPairs[phase - 1][0].style.display = 'flex';
+		checkpointFinal.style.display = 'flex';
+	}*/
+	//console.log(phase);
+	if (phase > -1 && phase < checkpointPairs.length) {
+		coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
 	}
-	coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
 
 });
 
@@ -253,17 +269,19 @@ document.addEventListener("touchend", e => {
 		if (!error) {
 			if (phase < checkpointPairs.length) {
 				coords.push([-1, -1, -1, checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
-				document.getElementById("errorModal").style.display = 'block'; // show error modal
+				document.getElementById("liftModal").style.display = 'block'; // show error modal
 				checkpointPairs[phase][0].style.display = 'none';
 				checkpointPairs[phase][1].style.display = 'none';
+
 				phase--; // force user to go back
 				error = true; // set error state
 			}
 			else {
 				coords.push([-1, -1, -1, checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]);
-				document.getElementById("errorModal").style.display = 'block'; // show error modal
+				document.getElementById("liftModal").style.display = 'block'; // show error modal
 				checkpointFinal.style.display = 'none';
-				phase = phase - 2; // force user to go back
+				//checkpointPairs[phase - 1][0].style.display = 'none';
+				phase--; // force user to go back
 				error = true; // set error state
 			}
 		}
@@ -272,6 +290,7 @@ document.addEventListener("touchend", e => {
 
 function closeErrorModal() {
 	document.getElementById("errorModal").style.display = 'none';
+	document.getElementById("liftModal").style.display = 'none';
 }
 
 function closeResultsModal() {
