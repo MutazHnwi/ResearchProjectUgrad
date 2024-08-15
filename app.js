@@ -61,7 +61,7 @@ const server = http.createServer((req, res) => {
 		} else if (pathname === '/calculateResult') {
 			async function getData() {
 				const resp = await pgClient.query('SELECT * FROM test_results ORDER BY Id DESC LIMIT 1');
-				console.log(resp.rows[0]);
+				//console.log(resp.rows[0]);
 				const obj = {
 					participantID: resp.rows[0].patientid,
 					blockno: resp.rows[0].blockno,
