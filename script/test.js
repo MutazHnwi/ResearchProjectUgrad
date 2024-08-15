@@ -2,6 +2,10 @@
 
 let startTime; // beginning of first touch
 
+let participantID;
+let blockno;
+
+const blockLimit = 4;
 const checkpointStart = document.getElementById('checkpoint1');
 const checkpointFinal = document.getElementById('checkpointE');
 const checkpointPairs = [
@@ -18,8 +22,16 @@ let phase = -1; // represents which checkpoint is next: -1 = 1, 0 = A, 1 = 2, 2 
 let error = false; // if in error state
 // this is an array of arrays of coordinates.
 const coords = [];
-let blockno = 1;
+//let blockno = 1;
 
+const getIDBlock = async function () {
+	const response = await fetch('/calculateResult');
+	const data = await response.json(); // Correct way to parse JSON
+	return data;
+}
+
+//console.log(participantID);
+//console.log(blockno);
 let end = 0;
 
 function currentTime() {
@@ -127,9 +139,7 @@ function placePoints(pair) {
 	}
 }
 
-for (let pair in [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
-	placePoints(pair); // this generates the locations of all of the points ahead of time
-}
+
 
 function endblock() {
 	console.log("endblock");
@@ -152,9 +162,10 @@ function endblock() {
 		error: [],
 		errorcorrected: [],
 	};
-	//console.log(data);
+	blockno = blockno + 1;
+	console.log(blockno);
 	for (const coord of coords) { // add coords to data object
-		data.patientid.push(0);
+		data.patientid.push(participantID);
 		data.blockno.push(blockno);
 		data.coordx.push(coord[0]);
 		data.coordy.push(coord[1]);
@@ -181,119 +192,139 @@ function endblock() {
 		},
 		body: JSON.stringify(data), // body is stringified json
 	});
-	document.getElementById("resultsModal").style.display = 'block';
+	if (blockno === blockLimit) {
+		document.getElementById("resultsModal").style.display = 'block';
+	}
+	else {
+		document.getElementById("restartsModal").style.display = 'block';
+	}
 }
 
-// At the touch start
-document.addEventListener("touchstart", e => {
-	if (coords.length == 0) {
-		startTime = Date.now(); // if first touch, set startTime
+getIDBlock().then(data => {
+	console.log(data); // Logs the data after the promise is resolved
+	participantID = data.participantID;
+	blockno = data.blockno;
+
+	if (blockno === blockLimit) {
+		participantID = participantID + 1;
+		blockno = 0;
 	}
 
-	// add point to coords
-	const touch = e.changedTouches[0];
+	for (let pair in [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
+		placePoints(pair); // this generates the locations of all of the points ahead of time
+	}
 
-	// Advance phase if starting on startpoint or previous with in error state
-	if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointStart) && phase == -1) {
-		phase++;
-		checkpointPairs[phase][0].style.display = 'flex';
-		checkpointPairs[phase][1].style.display = 'flex';
-	} else if (error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase > -1 ? checkpointPairs[phase][0] : checkpointStart)) {
-		if (phase < checkpointPairs.length - 1) {
+	// At the touch start
+	document.addEventListener("touchstart", e => {
+		if (coords.length == 0) {
+			startTime = Date.now(); // if first touch, set startTime
+		}
+
+		// add point to coords
+		const touch = e.changedTouches[0];
+
+		// Advance phase if starting on startpoint or previous with in error state
+		if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointStart) && phase == -1) {
 			phase++;
 			checkpointPairs[phase][0].style.display = 'flex';
 			checkpointPairs[phase][1].style.display = 'flex';
+		} else if (error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase > -1 ? checkpointPairs[phase][0] : checkpointStart)) {
+			if (phase < checkpointPairs.length - 1) {
+				phase++;
+				checkpointPairs[phase][0].style.display = 'flex';
+				checkpointPairs[phase][1].style.display = 'flex';
+			}
+			else {
+				checkpointPairs[phase][0].style.display = 'flex';
+				checkpointFinal.style.display = 'flex';
+				phase++;
+			}
+			error = false;
+		}
+
+		if (phase > -1 && phase < checkpointPairs.length) {
+			coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
+		}
+
+	});
+
+	document.addEventListener("touchmove", e => {
+		const touch = e.changedTouches[0];
+
+		// Advance phase if on correct point, show error message if not
+		if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][0] : checkpointFinal)) {
+			phase++;
+			checkpointStart.style.display = 'none';
+			if (phase < checkpointPairs.length) { // middle point
+				checkpointPairs[phase][0].style.display = 'flex';
+				checkpointPairs[phase][1].style.display = 'flex';
+				coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]); // add point to coords
+			} else if (phase == checkpointPairs.length) { // last point
+				checkpointFinal.style.display = 'flex'
+				coords.push([touch.screenX, touch.screenY, currentTime(), checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]); // add point to coords
+			}
+			if (phase > 0 && phase - 1 < checkpointPairs.length) {
+				checkpointPairs[phase - 1][1].style.display = 'none';
+			}
+			if (phase > 1 && phase - 2 < checkpointPairs.length) {
+				checkpointPairs[phase - 2][0].style.display = 'none';
+			}
+
+			if (end === 0 && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) {
+				end = 1;
+				endblock();
+			}
+
+		} else if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][1] : null)) {
+			coords.push([-2, -2, -2, checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
+			document.getElementById("errorModal").style.display = 'block'; // show error modal
+			checkpointPairs[phase][0].style.display = 'none';
+			checkpointPairs[phase][1].style.display = 'none';
+			phase--; // force user to go back
+			error = true; // set error state
 		}
 		else {
-			checkpointPairs[phase][0].style.display = 'flex';
-			checkpointFinal.style.display = 'flex';
-			phase++;
+			if (phase < checkpointPairs.length) { // middle point
+				coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]); // add point to coords
+			} else if (phase == checkpointPairs.length) { // last point
+				coords.push([touch.screenX, touch.screenY, currentTime(), checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]); // add point to coords
+			}
 		}
-		error = false;
-	}
+		//console.log(currentTime());
+	});
 
-	if (phase > -1 && phase < checkpointPairs.length) {
-		coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
-	}
+	document.addEventListener("touchend", e => {
+		// add point to coords
+		const touch = e.changedTouches[0];
 
-});
+		//console.log(currentTime());
 
-document.addEventListener("touchmove", e => {
-	const touch = e.changedTouches[0];
-
-	// Advance phase if on correct point, show error message if not
-	if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][0] : checkpointFinal)) {
-		phase++;
-		checkpointStart.style.display = 'none';
-		if (phase < checkpointPairs.length) { // middle point
-			checkpointPairs[phase][0].style.display = 'flex';
-			checkpointPairs[phase][1].style.display = 'flex';
-			coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]); // add point to coords
-		} else if (phase == checkpointPairs.length) { // last point
-			checkpointFinal.style.display = 'flex'
-			coords.push([touch.screenX, touch.screenY, currentTime(), checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]); // add point to coords
-		}
-		if (phase > 0 && phase - 1 < checkpointPairs.length) {
-			checkpointPairs[phase - 1][1].style.display = 'none';
-		}
-		if (phase > 1 && phase - 2 < checkpointPairs.length) {
-			checkpointPairs[phase - 2][0].style.display = 'none';
-		}
-
-		if (end === 0 && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) {
+		if (end === 0 && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) { // if at final point, submit data
 			end = 1;
 			endblock();
 		}
+		else {
+			if (!error && end === 0) {
+				if (phase < checkpointPairs.length) {
+					coords.push([-1, -1, -1, checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
+					document.getElementById("liftModal").style.display = 'block'; // show error modal
+					checkpointPairs[phase][0].style.display = 'none';
+					checkpointPairs[phase][1].style.display = 'none';
 
-	} else if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][1] : null)) {
-		coords.push([-2, -2, -2, checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
-		document.getElementById("errorModal").style.display = 'block'; // show error modal
-		checkpointPairs[phase][0].style.display = 'none';
-		checkpointPairs[phase][1].style.display = 'none';
-		phase--; // force user to go back
-		error = true; // set error state
-	}
-	else {
-		if (phase < checkpointPairs.length) { // middle point
-			coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]); // add point to coords
-		} else if (phase == checkpointPairs.length) { // last point
-			coords.push([touch.screenX, touch.screenY, currentTime(), checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]); // add point to coords
-		}
-	}
-	//console.log(currentTime());
-});
-
-document.addEventListener("touchend", e => {
-	// add point to coords
-	const touch = e.changedTouches[0];
-
-	//console.log(currentTime());
-
-	if (end === 0 && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) { // if at final point, submit data
-		end = 1;
-		endblock();
-	}
-	else {
-		if (!error && end === 0) {
-			if (phase < checkpointPairs.length) {
-				coords.push([-1, -1, -1, checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
-				document.getElementById("liftModal").style.display = 'block'; // show error modal
-				checkpointPairs[phase][0].style.display = 'none';
-				checkpointPairs[phase][1].style.display = 'none';
-
-				phase--; // force user to go back
-				error = true; // set error state
-			}
-			else {
-				coords.push([-1, -1, -1, checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]);
-				document.getElementById("liftModal").style.display = 'block'; // show error modal
-				checkpointFinal.style.display = 'none';
-				//checkpointPairs[phase - 1][0].style.display = 'none';
-				phase--; // force user to go back
-				error = true; // set error state
+					phase--; // force user to go back
+					error = true; // set error state
+				}
+				else {
+					coords.push([-1, -1, -1, checkpointFinal.id, checkpointFinal.getBoundingClientRect().x, checkpointFinal.getBoundingClientRect().y, 'none', -1, -1]);
+					document.getElementById("liftModal").style.display = 'block'; // show error modal
+					checkpointFinal.style.display = 'none';
+					//checkpointPairs[phase - 1][0].style.display = 'none';
+					phase--; // force user to go back
+					error = true; // set error state
+				}
 			}
 		}
-	}
+	});
 });
 
 function closeErrorModal() {
@@ -303,5 +334,6 @@ function closeErrorModal() {
 
 function closeResultsModal() {
 	document.getElementById("resultsModal").style.display = 'none';
+	document.getElementById("restartsModal").style.display = 'none';
 	window.location.reload();
 }

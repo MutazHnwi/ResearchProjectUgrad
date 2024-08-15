@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE-edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="style.css" rel="stylesheet" />
+  <link rel="shortcut icon" href="">
   <title>Touch Events Example</title>
   <script src="measures.js" defer> </script>
   <script src="test.js" defer> </script>
@@ -111,6 +112,21 @@
       </div>
       <div class="modal-footer">
         <button onclick="closeErrorModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="restartsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">Attempt Complete</span>
+        <span class="modal-close" onclick="closeResultsModal()">&times;</span>
+      </div>
+      <div class="modal-body" id="resultsModalBodyContent">
+        <span class="modal-download">Please repeat the task.</span>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeResultsModal()">Close</button>
       </div>
     </div>
   </div>

@@ -3,7 +3,10 @@ const fs = require('node:fs');
 const url = require('node:url');
 const pg = require('pg');
 
-const hostname = 'https://cognition-a0e89b43ca6a.herokuapp.com/' || 'localhost';
+var blockno;
+var participantID;
+
+// const hostname = 'https://cognition-a0e89b43ca6a.herokuapp.com/' || 'localhost';
 const port = process.env.PORT || 8080;
 
 const pgClient = new pg.Client({
@@ -50,9 +53,22 @@ const server = http.createServer((req, res) => {
 		} else if (pathname === '/instructions.js') {
 			serveFile('./script/instructions.js', 'application/javascript');
 		} else if (pathname === '/test.js') {
+			//console.log(blockno);
+			//console.log(participantID);
 			serveFile('./script/test.js', 'application/javascript');
 		} else if (pathname === '/measures.js') {
 			serveFile('./script/measures.js', 'application/javascript');
+		} else if (pathname === '/calculateResult') {
+			async function getData() {
+				const resp = await pgClient.query('SELECT * FROM test_results ORDER BY Id DESC LIMIT 1');
+				console.log(resp.rows[0]);
+				const obj = {
+					participantID: resp.rows[0].patientid,
+					blockno: resp.rows[0].blockno,
+				};
+				res.end(JSON.stringify(obj));
+			}
+			getData();
 		} else {
 			res.writeHead(404, { 'Content-Type': 'text/plain' });
 			res.end('404 page not found');
