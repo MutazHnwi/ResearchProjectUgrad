@@ -20,6 +20,8 @@ let error = false; // if in error state
 const coords = [];
 let blockno = 1;
 
+let end = 0;
+
 function currentTime() {
 	return Date.now() - startTime;
 }
@@ -129,6 +131,59 @@ for (let pair in [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
 	placePoints(pair); // this generates the locations of all of the points ahead of time
 }
 
+function endblock() {
+	console.log("endblock");
+	var data = { // create data object
+		patientid: [],
+		blockno: [],
+		coordx: [],
+		coordy: [],
+		coordt: [],
+		realpointid: [],
+		realpointx: [],
+		realpointy: [],
+		fakepointid: [],
+		fakepointx: [],
+		fakepointy: [],
+		speed: [],
+		pause: [],
+		correctangle: [],
+		wrongangle: [],
+		error: [],
+		errorcorrected: [],
+	};
+	//console.log(data);
+	for (const coord of coords) { // add coords to data object
+		data.patientid.push(0);
+		data.blockno.push(blockno);
+		data.coordx.push(coord[0]);
+		data.coordy.push(coord[1]);
+		data.coordt.push(coord[2]);
+		data.realpointid.push(coord[3]);
+		data.realpointx.push(coord[4]);
+		data.realpointy.push(coord[5]);
+		data.fakepointid.push(coord[6]);
+		data.fakepointx.push(coord[7]);
+		data.fakepointy.push(coord[8]);
+	}
+
+	//console.log(coords);
+
+	data = calculate_measures(coords, data);
+
+
+	//console.log(data); // TODO log data (debugging, remove later)
+
+	fetch("/submitdata", { // send data to server
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json", // as json
+		},
+		body: JSON.stringify(data), // body is stringified json
+	});
+	document.getElementById("resultsModal").style.display = 'block';
+}
+
 // At the touch start
 document.addEventListener("touchstart", e => {
 	if (coords.length == 0) {
@@ -144,7 +199,6 @@ document.addEventListener("touchstart", e => {
 		checkpointPairs[phase][0].style.display = 'flex';
 		checkpointPairs[phase][1].style.display = 'flex';
 	} else if (error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase > -1 ? checkpointPairs[phase][0] : checkpointStart)) {
-		console.log("hello");
 		if (phase < checkpointPairs.length - 1) {
 			phase++;
 			checkpointPairs[phase][0].style.display = 'flex';
@@ -153,16 +207,11 @@ document.addEventListener("touchstart", e => {
 		else {
 			checkpointPairs[phase][0].style.display = 'flex';
 			checkpointFinal.style.display = 'flex';
+			phase++;
 		}
 		error = false;
+	}
 
-	}/*
-	else if (error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointPairs[phase - 1][0])) {
-		error = false;
-		checkpointPairs[phase - 1][0].style.display = 'flex';
-		checkpointFinal.style.display = 'flex';
-	}*/
-	//console.log(phase);
 	if (phase > -1 && phase < checkpointPairs.length) {
 		coords.push([touch.screenX, touch.screenY, currentTime(), checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
 	}
@@ -190,6 +239,12 @@ document.addEventListener("touchmove", e => {
 		if (phase > 1 && phase - 2 < checkpointPairs.length) {
 			checkpointPairs[phase - 2][0].style.display = 'none';
 		}
+
+		if (end === 0 && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) {
+			end = 1;
+			endblock();
+		}
+
 	} else if (!error && document.elementsFromPoint(touch.pageX, touch.pageY).includes(phase < checkpointPairs.length ? checkpointPairs[phase][1] : null)) {
 		coords.push([-2, -2, -2, checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
 		document.getElementById("errorModal").style.display = 'block'; // show error modal
@@ -214,59 +269,12 @@ document.addEventListener("touchend", e => {
 
 	//console.log(currentTime());
 
-	if (document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) { // if at final point, submit data
-		var data = { // create data object
-			patientid: [],
-			blockno: [],
-			coordx: [],
-			coordy: [],
-			coordt: [],
-			realpointid: [],
-			realpointx: [],
-			realpointy: [],
-			fakepointid: [],
-			fakepointx: [],
-			fakepointy: [],
-			speed: [],
-			pause: [],
-			correctangle: [],
-			wrongangle: [],
-			error: [],
-			errorcorrected: [],
-		};
-		//console.log(data);
-		for (const coord of coords) { // add coords to data object
-			data.patientid.push(0);
-			data.blockno.push(blockno);
-			data.coordx.push(coord[0]);
-			data.coordy.push(coord[1]);
-			data.coordt.push(coord[2]);
-			data.realpointid.push(coord[3]);
-			data.realpointx.push(coord[4]);
-			data.realpointy.push(coord[5]);
-			data.fakepointid.push(coord[6]);
-			data.fakepointx.push(coord[7]);
-			data.fakepointy.push(coord[8]);
-		}
-
-		//console.log(coords);
-
-		data = calculate_measures(coords, data);
-
-
-		//console.log(data); // TODO log data (debugging, remove later)
-
-		fetch("/submitdata", { // send data to server
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json", // as json
-			},
-			body: JSON.stringify(data), // body is stringified json
-		});
-		document.getElementById("resultsModal").style.display = 'block';
+	if (end === 0 && document.elementsFromPoint(touch.pageX, touch.pageY).includes(checkpointFinal)) { // if at final point, submit data
+		end = 1;
+		endblock();
 	}
 	else {
-		if (!error) {
+		if (!error && end === 0) {
 			if (phase < checkpointPairs.length) {
 				coords.push([-1, -1, -1, checkpointPairs[phase][0].id, checkpointPairs[phase][0].getBoundingClientRect().x, checkpointPairs[phase][0].getBoundingClientRect().y, checkpointPairs[phase][1].id, checkpointPairs[phase][1].getBoundingClientRect().x, checkpointPairs[phase][1].getBoundingClientRect().y]);
 				document.getElementById("liftModal").style.display = 'block'; // show error modal
