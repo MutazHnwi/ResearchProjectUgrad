@@ -39,7 +39,7 @@ body {
     overscroll-behavior: contain;
 }
 
-.checkpoint { 
+.checkpoint {
     width: 80px;
     height: 80px;
     background-color: blue;
@@ -51,7 +51,7 @@ body {
     justify-content: right;
 }
 
-.checkpointFake { 
+.checkpointFake {
     width: 80px;
     height: 80px;
     background-color: blue;
@@ -76,8 +76,8 @@ body {
     position: absolute;
     top: 28px;
     left: 34px;
-	z-index: 5;
-	user-select: none;
+    z-index: 5;
+    user-select: none;
 }
 
 /* Modal styles */
@@ -122,4 +122,46 @@ body {
 
 .modal-close {
     cursor: pointer;
+}
+
+
+html,
+body {
+    height: 100%;
+}
+
+html {
+    display: table;
+    margin: auto;
+}
+
+.text-body {
+    display: table-cell;
+    vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#startButton {
+    height: 3em;
+    width: 5em;
+    font-size: larger;
+    text-align: center;
+}
+
+.title {
+    text-align: center;
+}
+
+.instructions {
+    text-align: left;
+    font-weight: bold;
+    font-size: large;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+li {
+    margin: 1rem;
 }

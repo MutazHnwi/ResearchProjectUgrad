@@ -334,6 +334,11 @@ function closeErrorModal() {
 
 function closeResultsModal() {
 	document.getElementById("resultsModal").style.display = 'none';
+	window.location.replace("/");
+
+}
+
+function closeRestartModal() {
 	document.getElementById("restartsModal").style.display = 'none';
 	window.location.reload();
 }

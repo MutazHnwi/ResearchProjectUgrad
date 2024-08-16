@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
 
 	if (req.method === 'GET') {
 		if (pathname === '/') {
-			serveFile('./html/index.html', 'text/html; charset=utf-8');
+			serveFile('./html/instructions.html', 'text/html; charset=utf-8');
 		} else if (pathname === '/instructions') {
 			serveFile('./html/instructions.html', 'text/html; charset=utf-8');
 		} else if (pathname === '/test') {
